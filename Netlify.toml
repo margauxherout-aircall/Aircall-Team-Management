@@ -1,0 +1,15 @@
+# Netlify configuration file
+
+[build]
+  publish = "."
+
+# Password protection for the entire site
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  
+[context.production]
+  # Enable password protection in Netlify UI:
+  # Site settings > Access control > Visitor access > Password protection

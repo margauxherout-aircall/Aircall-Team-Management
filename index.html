@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aircall Team Management - Bikeleasing</title>
+    <title>Aircall Team Management</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f5f5f5;
+            background: #F7F8FC;
             padding: 20px;
         }
         
@@ -27,7 +27,7 @@
         }
         
         h1 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 10px;
         }
         
@@ -42,7 +42,7 @@
         }
         
         .login-container h2 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 30px;
         }
         
@@ -55,13 +55,18 @@
         .login-form input,
         .login-form select {
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE3ED;
             border-radius: 6px;
             font-size: 14px;
         }
         
+        .login-form input:focus {
+            outline: none;
+            border-color: #00BD82;
+        }
+        
         .login-form button {
-            background: #4285F4;
+            background: #00BD82;
             color: white;
             border: none;
             padding: 12px;
@@ -73,21 +78,22 @@
         }
         
         .login-form button:hover:not(:disabled) {
-            background: #3367D6;
+            background: #00A872;
         }
         
         .login-form button:disabled {
-            background: #ccc;
+            background: #DDE3ED;
             cursor: not-allowed;
         }
         
         .error-message {
-            background: #FFEBEE;
-            color: #C62828;
+            background: #FEF0F0;
+            color: #E53E3E;
             padding: 10px;
             border-radius: 6px;
             font-size: 13px;
             display: none;
+            border: 1px solid #FEB2B2;
         }
         
         .team-selector {
@@ -100,13 +106,13 @@
         }
         
         .team-selector h2 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 20px;
             text-align: center;
         }
         
         .team-card {
-            border: 1px solid #ddd;
+            border: 1px solid #DDE3ED;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 15px;
@@ -115,26 +121,26 @@
         }
         
         .team-card:hover {
-            border-color: #4285F4;
-            background: #f8f9ff;
-            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+            border-color: #00BD82;
+            background: #F0FDF9;
+            box-shadow: 0 2px 8px rgba(0, 189, 130, 0.2);
         }
         
         .team-card h3 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 8px;
         }
         
         .team-card p {
-            color: #666;
+            color: #6B7280;
             font-size: 13px;
             margin-bottom: 5px;
         }
         
         .user-badge {
             display: inline-block;
-            background: #E8F5E9;
-            color: #2E7D32;
+            background: #F0FDF9;
+            color: #00BD82;
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 12px;
@@ -144,8 +150,8 @@
         
         .admin-badge-small {
             display: inline-block;
-            background: #F3E5F5;
-            color: #7B1FA2;
+            background: #FFF5E6;
+            color: #FFC000;
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 10px;
@@ -154,7 +160,7 @@
         }
         
         .team-info {
-            background: #f8f9fa;
+            background: #F7F8FC;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 20px;
@@ -162,7 +168,7 @@
         
         .team-info p {
             margin: 5px 0;
-            color: #666;
+            color: #6B7280;
         }
         
         .controls {
@@ -173,7 +179,7 @@
         }
         
         button {
-            background: #4285F4;
+            background: #00BD82;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -185,54 +191,55 @@
         }
         
         button:hover:not(:disabled) {
-            background: #3367D6;
+            background: #00A872;
         }
         
         button:disabled {
-            background: #ccc;
+            background: #DDE3ED;
             cursor: not-allowed;
         }
         
         button.success {
-            background: #34A853;
+            background: #00BD82;
         }
         
         button.success:hover:not(:disabled) {
-            background: #2d8e47;
+            background: #00A872;
         }
         
         button.danger {
-            background: #EA4335;
+            background: #E53E3E;
         }
         
         .back-btn {
-            background: #666;
+            background: #6B7280;
             padding: 8px 16px;
             font-size: 13px;
         }
         
         .back-btn:hover {
-            background: #555;
+            background: #4B5563;
         }
         
         .logout-btn {
-            background: #EA4335;
+            background: #E53E3E;
             padding: 8px 16px;
             font-size: 13px;
         }
         
         .logout-btn:hover {
-            background: #C5221F;
+            background: #C53030;
         }
         
         .view-logs-btn {
-            background: #FF9800;
+            background: #FFC000;
             padding: 8px 16px;
             font-size: 13px;
+            color: #1A1F36;
         }
         
         .view-logs-btn:hover {
-            background: #F57C00;
+            background: #E6AD00;
         }
         
         .search-box {
@@ -243,20 +250,25 @@
         .search-box input {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE3ED;
             border-radius: 6px;
             font-size: 14px;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #00BD82;
         }
         
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #6B7280;
         }
         
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4285F4;
+            border: 3px solid #F7F8FC;
+            border-top: 3px solid #00BD82;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -274,10 +286,10 @@
         }
         
         .section-header {
-            background: #f0f0f0;
+            background: #F7F8FC;
             padding: 12px 15px;
             font-weight: 600;
-            color: #333;
+            color: #1A1F36;
             border-radius: 6px;
             margin: 20px 0 10px;
             display: flex;
@@ -286,7 +298,7 @@
         }
         
         .count-badge {
-            background: #4285F4;
+            background: #00BD82;
             color: white;
             padding: 4px 12px;
             border-radius: 12px;
@@ -297,12 +309,12 @@
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #DDE3ED;
             transition: background 0.2s;
         }
         
         .user-item:hover {
-            background: #f9f9f9;
+            background: #F7F8FC;
         }
         
         .user-item input[type="checkbox"] {
@@ -310,6 +322,7 @@
             height: 20px;
             margin-right: 15px;
             cursor: pointer;
+            accent-color: #00BD82;
         }
         
         .user-info {
@@ -318,13 +331,13 @@
         
         .user-name {
             font-weight: 500;
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 3px;
         }
         
         .user-email {
             font-size: 13px;
-            color: #666;
+            color: #6B7280;
         }
         
         .status-badge {
@@ -336,13 +349,13 @@
         }
         
         .status-available {
-            background: #E8F5E9;
-            color: #2E7D32;
+            background: #F0FDF9;
+            color: #00BD82;
         }
         
         .status-unavailable {
-            background: #FFEBEE;
-            color: #C62828;
+            background: #FEF0F0;
+            color: #E53E3E;
         }
         
         .message {
@@ -352,15 +365,15 @@
         }
         
         .message.success {
-            background: #E8F5E9;
-            color: #2E7D32;
-            border: 1px solid #81C784;
+            background: #F0FDF9;
+            color: #00BD82;
+            border: 1px solid #9AE6C9;
         }
         
         .message.error {
-            background: #FFEBEE;
-            color: #C62828;
-            border: 1px solid #E57373;
+            background: #FEF0F0;
+            color: #E53E3E;
+            border: 1px solid #FEB2B2;
         }
         
         .bulk-actions {
@@ -400,7 +413,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(26, 31, 54, 0.4);
         }
         
         .modal-content {
@@ -421,16 +434,16 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid #F7F8FC;
         }
         
         .modal-header h2 {
-            color: #333;
+            color: #1A1F36;
             margin: 0;
         }
         
         .close {
-            color: #aaa;
+            color: #6B7280;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
@@ -438,7 +451,7 @@
         }
         
         .close:hover {
-            color: #000;
+            color: #1A1F36;
         }
         
         /* Table styles for logs */
@@ -454,7 +467,7 @@
         }
         
         .logs-table th {
-            background: #4285F4;
+            background: #00BD82;
             color: white;
             padding: 12px;
             text-align: left;
@@ -466,30 +479,30 @@
         
         .logs-table td {
             padding: 12px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #DDE3ED;
             vertical-align: top;
         }
         
         .logs-table tr:hover {
-            background: #f9f9f9;
+            background: #F7F8FC;
         }
         
         .logs-table tr:nth-child(even) {
-            background: #fafafa;
+            background: #FAFBFC;
         }
         
         .logs-table tr:nth-child(even):hover {
-            background: #f5f5f5;
+            background: #F7F8FC;
         }
         
         .log-timestamp {
             white-space: nowrap;
-            color: #333;
+            color: #1A1F36;
             font-weight: 500;
         }
         
         .log-email {
-            color: #4285F4;
+            color: #00BD82;
             font-weight: 500;
         }
         
@@ -505,39 +518,39 @@
         }
         
         .change-add {
-            background: #E8F5E9;
-            color: #2E7D32;
+            background: #F0FDF9;
+            color: #00BD82;
             font-weight: 500;
         }
         
         .change-add::before {
-            content: "✅ Added: ";
+            content: "Added: ";
         }
         
         .change-remove {
-            background: #FFEBEE;
-            color: #C62828;
+            background: #FEF0F0;
+            color: #E53E3E;
             font-weight: 500;
         }
         
         .change-remove::before {
-            content: "❌ Removed: ";
+            content: "Removed: ";
         }
         
         .download-logs-btn {
-            background: #34A853;
+            background: #00BD82;
             padding: 10px 20px;
             margin-top: 15px;
         }
         
         .download-logs-btn:hover {
-            background: #2d8e47;
+            background: #00A872;
         }
         
         .no-logs {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #6B7280;
         }
         
         #initialLogin,
@@ -545,17 +558,32 @@
         #mainApp {
             display: none;
         }
+        
+        .admin-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .admin-link a {
+            color: #FFC000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <!-- Initial Login -->
     <div id="initialLogin" class="login-container">
-        <h2>🔒 Bikeleasing Team Management</h2>
-        <p style="color: #666; margin-bottom: 30px;">Enter your credentials to access</p>
+        <h2>Aircall Team Management</h2>
+        <p style="color: #6B7280; margin-bottom: 30px;">Enter your credentials to access</p>
         <form class="login-form" onsubmit="initialLogin(event)">
             <input type="email" 
                    id="userEmailInput" 
-                   placeholder="Your Email Address" 
+                   placeholder="Email Address" 
                    required 
                    autocomplete="email">
             <input type="password" 
@@ -571,16 +599,14 @@
     <!-- Team Selector -->
     <div id="teamSelector" class="team-selector">
         <div class="user-badge">
-            👤 Logged in as: <span id="loggedInUser"></span>
+            Logged in as: <span id="loggedInUser"></span>
             <span id="userRoleBadge"></span>
         </div>
-        <div id="adminLink" style="text-align: center; margin-bottom: 20px; display: none;">
-            <a href="admin.html" style="color: #9C27B0; text-decoration: none; font-weight: 600;">
-                👩‍💼 Go to Admin Panel
-            </a>
+        <div id="adminLink" class="admin-link" style="display: none;">
+            <a href="admin.html">Admin Panel</a>
         </div>
         <h2>Select a Team</h2>
-        <p style="color: #666; text-align: center; margin-bottom: 30px;">Choose which team you want to manage</p>
+        <p style="color: #6B7280; text-align: center; margin-bottom: 30px;">Choose which team you want to manage</p>
         
         <div id="loading" class="loading" style="display: none;">
             <div class="spinner"></div>
@@ -601,16 +627,16 @@
                 <div>
                     <h1>Aircall Team Management</h1>
                     <div class="user-badge">
-                        👤 <span id="loggedInUser3"></span>
+                        <span id="loggedInUser3"></span>
                         <span id="userRoleBadge2"></span>
                     </div>
                 </div>
                 <div class="header-buttons">
-                    <button class="view-logs-btn" onclick="showLogsModal()">📋 View Change Log</button>
-                    <button id="adminBtn" class="view-logs-btn" onclick="window.open('admin.html', '_blank')" style="display: none; background: #9C27B0;">
-                        👩‍💼 Admin Panel
+                    <button class="view-logs-btn" onclick="showLogsModal()">View Change Log</button>
+                    <button id="adminBtn" class="view-logs-btn" onclick="window.open('admin.html', '_blank')" style="display: none;">
+                        Admin Panel
                     </button>
-                    <button class="back-btn" onclick="backToTeamSelector()">← Change Team</button>
+                    <button class="back-btn" onclick="backToTeamSelector()">Change Team</button>
                     <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -623,8 +649,8 @@
             <div id="message"></div>
             
             <div class="controls">
-                <button id="syncBtn" onclick="syncData()">🔄 Sync Team</button>
-                <button id="applyBtn" onclick="applyChanges()" class="success" disabled>✓ Apply Changes</button>
+                <button id="syncBtn" onclick="syncData()">Sync Team</button>
+                <button id="applyBtn" onclick="applyChanges()" class="success" disabled>Apply Changes</button>
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search users by name or email..." onkeyup="filterUsers()">
                 </div>
@@ -644,13 +670,13 @@
                 </div>
                 
                 <div class="section-header">
-                    <span>👥 Team Members</span>
+                    <span>Team Members</span>
                     <span class="count-badge" id="inTeamCount">0</span>
                 </div>
                 <div id="inTeamList"></div>
                 
                 <div class="section-header">
-                    <span>📋 Available Users</span>
+                    <span>Available Users</span>
                     <span class="count-badge" id="availableCount">0</span>
                 </div>
                 <div id="availableList"></div>
@@ -662,13 +688,13 @@
     <div id="logsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>📋 Change Log</h2>
+                <h2>Change Log</h2>
                 <span class="close" onclick="closeLogsModal()">&times;</span>
             </div>
             <div id="logsContent">
                 <p class="no-logs">No changes logged yet.</p>
             </div>
-            <button class="download-logs-btn" onclick="downloadLogs()">⬇️ Download as CSV</button>
+            <button class="download-logs-btn" onclick="downloadLogs()">Download as CSV</button>
         </div>
     </div>
 
@@ -716,7 +742,7 @@
                             email: values[0] || '',
                             password: values[1] || '',
                             allowedTeams: values[2] ? values[2].split(',').map(t => t.trim()) : [],
-                            role: (values[3] || 'user').toLowerCase().trim() // Column D - Role
+                            role: (values[3] || 'user').toLowerCase().trim()
                         };
                     })
                     .filter(user => user.email && user.password);
@@ -775,7 +801,7 @@
                             <tbody>
                                 ${changeLogs.map(log => {
                                     const date = new Date(log.timestamp);
-                                    const formattedDate = date.toLocaleString('de-DE', {
+                                    const formattedDate = date.toLocaleString('en-US', {
                                         year: 'numeric',
                                         month: '2-digit',
                                         day: '2-digit',
@@ -795,7 +821,7 @@
                                             <td class="log-email">${log.performedBy}</td>
                                             <td class="log-changes">
                                                 ${changesHtml}
-                                                <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                                                <div style="font-size: 12px; color: #6B7280; margin-top: 8px;">
                                                     Team: ${log.teamName} (ID: ${log.teamId})
                                                 </div>
                                             </td>
@@ -882,10 +908,10 @@
         
         // Check authentication on load
         function checkAuth() {
-            const companyAuth = sessionStorage.getItem('bikeleasing_company_auth');
-            const teamData = sessionStorage.getItem('bikeleasing_selected_team');
-            const userEmail = sessionStorage.getItem('bikeleasing_user_email');
-            const userRole = sessionStorage.getItem('bikeleasing_user_role');
+            const companyAuth = sessionStorage.getItem('aircall_company_auth');
+            const teamData = sessionStorage.getItem('aircall_selected_team');
+            const userEmail = sessionStorage.getItem('aircall_user_email');
+            const userRole = sessionStorage.getItem('aircall_user_role');
             
             if (companyAuth === 'true' && userEmail) {
                 isCompanyAuthenticated = true;
@@ -928,7 +954,7 @@
         // Select team and go directly to main app
         function selectTeam(team) {
             selectedTeam = team;
-            sessionStorage.setItem('bikeleasing_selected_team', JSON.stringify(selectedTeam));
+            sessionStorage.setItem('aircall_selected_team', JSON.stringify(selectedTeam));
             showMainApp();
         }
         
@@ -970,10 +996,10 @@
             
             if (user) {
                 // Authentication successful
-                sessionStorage.setItem('bikeleasing_company_auth', 'true');
-                sessionStorage.setItem('bikeleasing_user_email', user.email);
-                sessionStorage.setItem('bikeleasing_user_role', user.role);
-                sessionStorage.setItem('bikeleasing_allowed_teams', JSON.stringify(user.allowedTeams));
+                sessionStorage.setItem('aircall_company_auth', 'true');
+                sessionStorage.setItem('aircall_user_email', user.email);
+                sessionStorage.setItem('aircall_user_role', user.role);
+                sessionStorage.setItem('aircall_allowed_teams', JSON.stringify(user.allowedTeams));
                 isCompanyAuthenticated = true;
                 currentUserEmail = user.email;
                 currentUserRole = user.role;
@@ -998,7 +1024,7 @@
         
         // Back to team selector
         function backToTeamSelector() {
-            sessionStorage.removeItem('bikeleasing_selected_team');
+            sessionStorage.removeItem('aircall_selected_team');
             selectedTeam = null;
             showTeamSelector();
         }
@@ -1013,11 +1039,11 @@
             
             try {
                 // Get allowed teams from session
-                const allowedTeamsJson = sessionStorage.getItem('bikeleasing_allowed_teams');
+                const allowedTeamsJson = sessionStorage.getItem('aircall_allowed_teams');
                 const allowedTeams = allowedTeamsJson ? JSON.parse(allowedTeamsJson) : [];
                 
                 if (allowedTeams.length === 0) {
-                    teamsList.innerHTML = '<p style="color: #666; text-align: center;">You do not have access to any teams.</p>';
+                    teamsList.innerHTML = '<p style="color: #6B7280; text-align: center;">You do not have access to any teams.</p>';
                     loading.style.display = 'none';
                     return;
                 }
@@ -1044,7 +1070,7 @@
                 );
                 
                 if (filteredTeams.length === 0) {
-                    teamsList.innerHTML = '<p style="color: #666; text-align: center;">No matching teams found. Check your team access permissions.</p>';
+                    teamsList.innerHTML = '<p style="color: #6B7280; text-align: center;">No matching teams found. Check your team access permissions.</p>';
                     loading.style.display = 'none';
                     return;
                 }
@@ -1156,7 +1182,7 @@
                 document.getElementById('applyBtn').disabled = false;
                 syncBtn.disabled = false;
                 
-                showMessage(`✓ Synced ${allUsers.length} users. Team has ${teamMembers.length} members.`, 'success');
+                showMessage(`Synced ${allUsers.length} users. Team has ${teamMembers.length} members.`, 'success');
             } catch (error) {
                 loading.style.display = 'none';
                 showMessage(`Error: ${error.message}`, 'error');
@@ -1245,7 +1271,7 @@
             
             const applyBtn = document.getElementById('applyBtn');
             applyBtn.disabled = true;
-            applyBtn.textContent = '⏳ Applying...';
+            applyBtn.textContent = 'Applying...';
             
             try {
                 const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -1269,7 +1295,7 @@
                 if (changes.length === 0) {
                     showMessage('No changes to apply.', 'success');
                     applyBtn.disabled = false;
-                    applyBtn.textContent = '✓ Apply Changes';
+                    applyBtn.textContent = 'Apply Changes';
                     return;
                 }
                 
@@ -1314,7 +1340,7 @@
                     addLogEntry(changesForLog, teamData.name, selectedTeam.id);
                 }
                 
-                let message = `✓ Changes applied: ${added} added, ${removed} removed`;
+                let message = `Changes applied: ${added} added, ${removed} removed`;
                 if (errors > 0) {
                     message += `. ${errors} errors occurred.`;
                 }
@@ -1327,7 +1353,7 @@
                 showMessage(`Error: ${error.message}`, 'error');
             } finally {
                 applyBtn.disabled = false;
-                applyBtn.textContent = '✓ Apply Changes';
+                applyBtn.textContent = 'Apply Changes';
             }
         }
         

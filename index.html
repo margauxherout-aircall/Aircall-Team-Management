@@ -1064,10 +1064,16 @@
                 const data = await response.json();
                 allTeams = data.teams || [];
                 
+                // Debug logging
+                console.log('Allowed teams from CSV:', allowedTeams);
+                console.log('All teams from Aircall:', allTeams.map(t => t.name));
+                
                 // Filter teams by allowed team names
                 const filteredTeams = allTeams.filter(team => 
                     allowedTeams.includes(team.name)
                 );
+                
+                console.log('Filtered teams:', filteredTeams.map(t => t.name));
                 
                 if (filteredTeams.length === 0) {
                     teamsList.innerHTML = '<p style="color: #6B7280; text-align: center;">No matching teams found. Check your team access permissions.</p>';

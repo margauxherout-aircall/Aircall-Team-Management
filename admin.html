@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Manage Users CSV</title>
+    <title>Aircall Team Management</title>
     <style>
         * {
             margin: 0;
@@ -18,12 +18,12 @@
         }
         
         .container {
-            max-width: 800px;
-            margin: 50px auto;
+            max-width: 1200px;
+            margin: 0 auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 40px;
+            padding: 30px;
         }
         
         h1 {
@@ -31,48 +31,151 @@
             margin-bottom: 10px;
         }
         
-        .subtitle {
-            color: #6B7280;
-            margin-bottom: 30px;
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
         }
         
-        .login-section {
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #F7F8FC;
-        }
-        
-        .upload-section {
-            display: none;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .login-container h2 {
             color: #1A1F36;
+            margin-bottom: 30px;
         }
         
-        input[type="email"],
-        input[type="password"],
-        input[type="file"],
-        input[type="text"] {
-            width: 100%;
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .login-form input,
+        .login-form select {
             padding: 12px;
             border: 1px solid #DDE3ED;
             border-radius: 6px;
             font-size: 14px;
         }
         
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        input[type="text"]:focus {
+        .login-form input:focus {
             outline: none;
             border-color: #00BD82;
+        }
+        
+        .login-form button {
+            background: #00BD82;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .login-form button:hover:not(:disabled) {
+            background: #00A872;
+        }
+        
+        .login-form button:disabled {
+            background: #DDE3ED;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            background: #FEF0F0;
+            color: #E53E3E;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+            border: 1px solid #FEB2B2;
+        }
+        
+        .team-selector {
+            max-width: 500px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .team-selector h2 {
+            color: #1A1F36;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .team-card {
+            border: 1px solid #DDE3ED;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .team-card:hover {
+            border-color: #00BD82;
+            background: #F0FDF9;
+            box-shadow: 0 2px 8px rgba(0, 189, 130, 0.2);
+        }
+        
+        .team-card h3 {
+            color: #1A1F36;
+            margin-bottom: 8px;
+        }
+        
+        .team-card p {
+            color: #6B7280;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            background: #F0FDF9;
+            color: #00BD82;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .admin-badge-small {
+            display: inline-block;
+            background: #FFF5E6;
+            color: #FFC000;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .team-info {
+            background: #F7F8FC;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .team-info p {
+            margin: 5px 0;
+            color: #6B7280;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
         button {
@@ -85,7 +188,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
-            width: 100%;
         }
         
         button:hover:not(:disabled) {
@@ -101,360 +203,548 @@
             background: #00BD82;
         }
         
-        button.download {
-            background: #FFC000;
-            color: #1A1F36;
+        button.success:hover:not(:disabled) {
+            background: #00A872;
         }
         
-        button.download:hover {
-            background: #E6AD00;
-        }
-        
-        button.logout {
+        button.danger {
             background: #E53E3E;
-            margin-top: 20px;
         }
         
-        button.logout:hover {
+        .back-btn {
+            background: #6B7280;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .back-btn:hover {
+            background: #4B5563;
+        }
+        
+        .logout-btn {
+            background: #E53E3E;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .logout-btn:hover {
             background: #C53030;
         }
         
-        .error-message,
-        .success-message {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .error-message {
-            background: #FEF0F0;
-            color: #E53E3E;
-            border: 1px solid #FEB2B2;
-            display: none;
-        }
-        
-        .success-message {
-            background: #F0FDF9;
-            color: #00BD82;
-            border: 1px solid #9AE6C9;
-            display: none;
-        }
-        
-        .info-box {
-            background: #F0F9FF;
-            border: 1px solid #BAE6FD;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .info-box h3 {
-            color: #0369A1;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .info-box p {
-            color: #0C4A6E;
-            font-size: 14px;
-            line-height: 1.8;
-            margin-bottom: 10px;
-        }
-        
-        .info-box code {
-            background: #E0F2FE;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .info-box ul {
-            margin-left: 20px;
-            margin-top: 10px;
-            color: #0C4A6E;
-        }
-        
-        .info-box li {
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-        
-        .warning-box {
-            background: #FFF7ED;
-            border: 1px solid #FED7AA;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .warning-box h4 {
-            color: #C2410C;
-            margin-bottom: 10px;
-        }
-        
-        .warning-box p {
-            color: #C2410C;
+        .view-logs-btn {
+            background: #FFC000;
+            padding: 8px 16px;
             font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        .current-users {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #F7F8FC;
-        }
-        
-        .current-users h3 {
             color: #1A1F36;
-            margin-bottom: 15px;
+        }
+        
+        .view-logs-btn:hover {
+            background: #E6AD00;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #DDE3ED;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #00BD82;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+        
+        .spinner {
+            border: 3px solid #F7F8FC;
+            border-top: 3px solid #00BD82;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .user-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #DDE3ED;
+            margin-top: 20px;
+        }
+        
+        .section-header {
+            background: #F7F8FC;
+            padding: 12px 15px;
+            font-weight: 600;
+            color: #1A1F36;
             border-radius: 6px;
-            padding: 10px;
+            margin: 20px 0 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .count-badge {
+            background: #00BD82;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
         }
         
         .user-item {
-            padding: 8px;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
             border-bottom: 1px solid #DDE3ED;
-            font-size: 13px;
+            transition: background 0.2s;
         }
         
-        .user-item:last-child {
-            border-bottom: none;
+        .user-item:hover {
+            background: #F7F8FC;
+        }
+        
+        .user-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #00BD82;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: #1A1F36;
+            margin-bottom: 3px;
         }
         
         .user-email {
-            font-weight: 600;
-            color: #1A1F36;
-        }
-        
-        .user-teams {
+            font-size: 13px;
             color: #6B7280;
-            margin-top: 3px;
-            font-size: 12px;
         }
         
-        .admin-badge {
-            display: inline-block;
-            background: #FFF5E6;
-            color: #FFC000;
-            padding: 4px 10px;
+        .status-badge {
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: 600;
-            margin-left: 8px;
+            text-transform: uppercase;
         }
         
-        .step-box {
-            background: #FAFBFC;
-            border-left: 4px solid #00BD82;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-        
-        .step-box h4 {
+        .status-available {
+            background: #F0FDF9;
             color: #00BD82;
-            margin-bottom: 10px;
-            font-size: 15px;
         }
         
-        .step-box p {
-            color: #1A1F36;
-            font-size: 14px;
-            line-height: 1.6;
+        .status-unavailable {
+            background: #FEF0F0;
+            color: #E53E3E;
         }
         
-        .csv-example {
-            background: #1A1F36;
-            color: #9AE6C9;
+        .message {
             padding: 15px;
             border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
             margin-bottom: 20px;
         }
         
-        .button-group button {
-            flex: 1;
+        .message.success {
+            background: #F0FDF9;
+            color: #00BD82;
+            border: 1px solid #9AE6C9;
+        }
+        
+        .message.error {
+            background: #FEF0F0;
+            color: #E53E3E;
+            border: 1px solid #FEB2B2;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .bulk-actions button {
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(26, 31, 54, 0.4);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F7F8FC;
+        }
+        
+        .modal-header h2 {
+            color: #1A1F36;
+            margin: 0;
+        }
+        
+        .close {
+            color: #6B7280;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #1A1F36;
+        }
+        
+        /* Table styles for logs */
+        .logs-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .logs-table th {
+            background: #00BD82;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .logs-table td {
+            padding: 12px;
+            border-bottom: 1px solid #DDE3ED;
+            vertical-align: top;
+        }
+        
+        .logs-table tr:hover {
+            background: #F7F8FC;
+        }
+        
+        .logs-table tr:nth-child(even) {
+            background: #FAFBFC;
+        }
+        
+        .logs-table tr:nth-child(even):hover {
+            background: #F7F8FC;
+        }
+        
+        .log-timestamp {
+            white-space: nowrap;
+            color: #1A1F36;
+            font-weight: 500;
+        }
+        
+        .log-email {
+            color: #00BD82;
+            font-weight: 500;
+        }
+        
+        .log-changes {
+            line-height: 1.8;
+        }
+        
+        .change-item {
+            margin: 3px 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .change-add {
+            background: #F0FDF9;
+            color: #00BD82;
+            font-weight: 500;
+        }
+        
+        .change-add::before {
+            content: "Added: ";
+        }
+        
+        .change-remove {
+            background: #FEF0F0;
+            color: #E53E3E;
+            font-weight: 500;
+        }
+        
+        .change-remove::before {
+            content: "Removed: ";
+        }
+        
+        .download-logs-btn {
+            background: #00BD82;
+            padding: 10px 20px;
+            margin-top: 15px;
+        }
+        
+        .download-logs-btn:hover {
+            background: #00A872;
+        }
+        
+        .no-logs {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+        
+        #initialLogin,
+        #teamSelector,
+        #mainApp {
+            display: none;
+        }
+        
+        .admin-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .admin-link a {
+            color: #FFC000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .admin-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Panel</h1>
-        <p class="subtitle">Manage user access and permissions</p>
+    <!-- Initial Login -->
+    <div id="initialLogin" class="login-container">
+        <h2>Aircall Team Management</h2>
+        <p style="color: #6B7280; margin-bottom: 30px;">Enter your credentials to access</p>
+        <form class="login-form" onsubmit="initialLogin(event)">
+            <input type="email" 
+                   id="userEmailInput" 
+                   placeholder="Email Address" 
+                   required 
+                   autocomplete="email">
+            <input type="password" 
+                   id="initialPasswordInput" 
+                   placeholder="Password" 
+                   required 
+                   autocomplete="off">
+            <div id="initialLoginError" class="error-message"></div>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+    </div>
+
+    <!-- Team Selector -->
+    <div id="teamSelector" class="team-selector">
+        <div class="user-badge">
+            Logged in as: <span id="loggedInUser"></span>
+            <span id="userRoleBadge"></span>
+        </div>
+        <div id="adminLink" class="admin-link" style="display: none;">
+            <a href="admin.html">Admin Panel</a>
+        </div>
+        <h2>Select a Team</h2>
+        <p style="color: #6B7280; text-align: center; margin-bottom: 30px;">Choose which team you want to manage</p>
         
-        <!-- Login Section -->
-        <div id="loginSection" class="login-section">
-            <div class="form-group">
-                <label for="adminEmail">Email:</label>
-                <input type="email" id="adminEmail" placeholder="your.email@company.com">
-            </div>
-            <div class="form-group">
-                <label for="adminPassword">Password:</label>
-                <input type="password" id="adminPassword" placeholder="Enter your password from the CSV">
-            </div>
-            <div id="loginError" class="error-message"></div>
-            <button onclick="adminLogin()">Login</button>
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading teams from Aircall...</p>
         </div>
         
-        <!-- Upload Section (hidden until login) -->
-        <div id="uploadSection" class="upload-section">
-            <div style="margin-bottom: 20px;">
-                <span style="color: #6B7280;">Logged in as:</span>
-                <strong id="adminEmailDisplay"></strong>
-                <span class="admin-badge">ADMIN</span>
-            </div>
-            
-            <!-- Instructions -->
-            <div class="info-box">
-                <h3>How to Update the User List</h3>
-                
-                <div class="step-box">
-                    <h4>Step 1: Download Current CSV</h4>
-                    <p>Click the "Download Current CSV" button below to get the current user list from GitHub.</p>
+        <div id="teamsList"></div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp">
+        <div class="container">
+            <div class="header-bar">
+                <div>
+                    <h1>Aircall Team Management</h1>
+                    <div class="user-badge">
+                        <span id="loggedInUser3"></span>
+                        <span id="userRoleBadge2"></span>
+                    </div>
                 </div>
-                
-                <div class="step-box">
-                    <h4>Step 2: Edit the CSV File</h4>
-                    <p>Open the downloaded file in Excel or Google Sheets. You can:</p>
-                    <ul>
-                        <li>Add new users</li>
-                        <li>Update passwords</li>
-                        <li>Change team access</li>
-                        <li>Set user roles (admin or user)</li>
-                        <li>Remove users (delete the row)</li>
-                    </ul>
-                </div>
-                
-                <div class="step-box">
-                    <h4>Step 3: Save as CSV</h4>
-                    <p>Save your changes as CSV format (not .xlsx):</p>
-                    <ul>
-                        <li><strong>Excel:</strong> File → Save As → CSV (Comma delimited)</li>
-                        <li><strong>Google Sheets:</strong> File → Download → Comma Separated Values (.csv)</li>
-                    </ul>
-                </div>
-                
-                <div class="step-box">
-                    <h4>Step 4: Upload to GitHub</h4>
-                    <p>Upload the new CSV file to GitHub to replace the old one. This page will help you prepare the file, but you must manually upload it to GitHub.</p>
+                <div class="header-buttons">
+                    <button class="view-logs-btn" onclick="showLogsModal()">View Change Log</button>
+                    <button id="adminBtn" class="view-logs-btn" onclick="window.open('admin.html', '_blank')" style="display: none;">
+                        Admin Panel
+                    </button>
+                    <button class="back-btn" onclick="backToTeamSelector()">Change Team</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
             
-            <!-- CSV Format Guide -->
-            <div class="info-box">
-                <h3>CSV File Format</h3>
-                <p><strong>Required columns (in this exact order):</strong></p>
-                <div class="csv-example">Email,Password,Team Access,Role
-user@company.com,mypassword,"Sales Team,Support Team",admin
-john@company.com,pass123,Tech Team,user
-jane@company.com,pass456,"Team A,Team B",admin</div>
-                
-                <p><strong>Important rules:</strong></p>
-                <ul>
-                    <li><strong>First row must be:</strong> <code>Email,Password,Team Access,Role</code></li>
-                    <li><strong>Email:</strong> User's email address (must match their Aircall email)</li>
-                    <li><strong>Password:</strong> Any password you choose (users will use this to login)</li>
-                    <li><strong>Team Access:</strong> 
-                        <ul>
-                            <li>Single team: <code>Tech Team</code> (no quotes)</li>
-                            <li>Multiple teams: <code>"Sales Team,Support Team"</code> (with quotes)</li>
-                        </ul>
-                    </li>
-                    <li><strong>Role:</strong> Either <code>admin</code> or <code>user</code>
-                        <ul>
-                            <li><code>admin</code> - Can access admin panel to manage users</li>
-                            <li><code>user</code> - Can only manage teams</li>
-                        </ul>
-                    </li>
-                    <li><strong>Team names must exactly match</strong> the team names in Aircall</li>
-                </ul>
+            <div class="team-info" id="teamInfo" style="display: none;">
+                <p><strong>Team:</strong> <span id="teamName">-</span></p>
+                <p><strong>Team ID:</strong> <span id="teamId">-</span></p>
             </div>
             
-            <!-- Warning Box -->
-            <div class="warning-box">
-                <h4>Important Security Note</h4>
-                <p><strong>After uploading to GitHub:</strong></p>
-                <ul>
-                    <li>Users must refresh their browser to see changes</li>
-                    <li>Changes take effect immediately</li>
-                    <li>Keep your GitHub repository private if possible</li>
-                    <li>Passwords in the CSV are visible to anyone with access to the repository</li>
-                    <li>Only users with <code>admin</code> role can access this admin panel</li>
-                </ul>
-            </div>
+            <div id="message"></div>
             
-            <div id="uploadError" class="error-message"></div>
-            <div id="uploadSuccess" class="success-message"></div>
-            
-            <!-- Action Buttons -->
-            <div class="button-group">
-                <button class="download" onclick="downloadCurrentCSV()">Download Current CSV from GitHub</button>
-                <button class="download" onclick="downloadTemplate()">Download Empty Template</button>
-            </div>
-            
-            <div class="form-group">
-                <label for="csvFile">Preview & Validate Your CSV File:</label>
-                <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
-                <p style="font-size: 12px; color: #6B7280; margin-top: 8px;">
-                    This will validate your CSV format. After validation, you must manually upload the file to GitHub.
-                </p>
-            </div>
-            
-            <!-- Current Users Display -->
-            <div class="current-users">
-                <h3>Preview: Users in Selected File (<span id="userCount">0</span>)</h3>
-                <div id="currentUsers" class="user-list">
-                    <p style="color: #6B7280; text-align: center;">Select a CSV file to preview users</p>
+            <div class="controls">
+                <button id="syncBtn" onclick="syncData()">Sync Team</button>
+                <button id="applyBtn" onclick="applyChanges()" class="success" disabled>Apply Changes</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search users by name or email..." onkeyup="filterUsers()">
                 </div>
             </div>
             
-            <!-- GitHub Upload Instructions -->
-            <div class="info-box" id="uploadInstructions" style="display: none;">
-                <h3>Next Step: Upload to GitHub</h3>
-                <p><strong>Your CSV file is valid!</strong> Now upload it to GitHub:</p>
-                <ol style="margin-left: 20px; margin-top: 10px;">
-                    <li>Go to your GitHub repository</li>
-                    <li>Click on <code>User_List.csv</code> (if it exists)</li>
-                    <li>Click the pencil icon to edit, OR click "Add file" → "Upload files"</li>
-                    <li>Upload your new CSV file</li>
-                    <li>Scroll down and click "Commit changes"</li>
-                    <li>Done! Users can now login with the new credentials</li>
-                </ol>
-                <p style="margin-top: 15px;"><strong>GitHub Repository URL:</strong></p>
-                <input type="text" id="githubUrl" placeholder="https://github.com/yourusername/your-repo" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #BAE6FD; border-radius: 4px;">
+            <div id="loadingUsers" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading data from Aircall...</p>
             </div>
             
-            <button class="logout" onclick="adminLogout()">Logout</button>
+            <div id="userList" class="user-list" style="display: none;">
+                <div class="bulk-actions">
+                    <button onclick="selectAll(true)">Select All</button>
+                    <button onclick="selectAll(false)">Deselect All</button>
+                    <button onclick="selectSection('inTeam')">Select Team Members</button>
+                    <button onclick="selectSection('available')">Select Available</button>
+                </div>
+                
+                <div class="section-header">
+                    <span>Team Members</span>
+                    <span class="count-badge" id="inTeamCount">0</span>
+                </div>
+                <div id="inTeamList"></div>
+                
+                <div class="section-header">
+                    <span>Available Users</span>
+                    <span class="count-badge" id="availableCount">0</span>
+                </div>
+                <div id="availableList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Log Modal -->
+    <div id="logsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change Log</h2>
+                <span class="close" onclick="closeLogsModal()">&times;</span>
+            </div>
+            <div id="logsContent">
+                <p class="no-logs">No changes logged yet.</p>
+            </div>
+            <button class="download-logs-btn" onclick="downloadLogs()">Download as CSV</button>
         </div>
     </div>
 
     <script>
-        let selectedFile = null;
-        let currentUsers = [];
-        let authorizedUsers = [];
+        // Configuration - API credentials stored in session
+        const CONFIG = {
+            apiId: sessionStorage.getItem('aircall_api_id') || '',
+            apiToken: sessionStorage.getItem('aircall_api_token') || '',
+        };
         
-        // Load users from GitHub on page load
-        async function loadUsersFromGitHub() {
+        const baseUrl = "https://api.aircall.io/v1/";
+        
+        // Check if API credentials are configured
+        function checkApiCredentials() {
+            if (!CONFIG.apiId || !CONFIG.apiToken) {
+                const apiId = prompt('Enter Aircall API ID:');
+                const apiToken = prompt('Enter Aircall API Token:');
+                
+                if (apiId && apiToken) {
+                    sessionStorage.setItem('aircall_api_id', apiId);
+                    sessionStorage.setItem('aircall_api_token', apiToken);
+                    CONFIG.apiId = apiId;
+                    CONFIG.apiToken = apiToken;
+                    return true;
+                } else {
+                    alert('API credentials are required to use this application.');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        let allUsers = [];
+        let teamMembers = [];
+        let originalTeamMemberEmails = new Set();
+        let allTeams = [];
+        let selectedTeam = null;
+        let currentUserEmail = '';
+        let currentUserRole = '';
+        let changeLogs = [];
+        let authorizedUsers = [];
+        let isCompanyAuthenticated = false;
+
+        // Load users from CSV file on GitHub
+        async function loadUsersFromCSV() {
             try {
                 const response = await fetch('User_List.csv');
+                
                 if (!response.ok) {
-                    console.log('No CSV found on GitHub yet');
+                    console.log('CSV file not found. Please upload User_List.csv to GitHub.');
                     return;
                 }
                 
@@ -483,201 +773,625 @@ jane@company.com,pass456,"Team A,Team B",admin</div>
             }
         }
         
-        // Check if already logged in
-        window.addEventListener('load', () => {
-            loadUsersFromGitHub().then(() => {
-                if (sessionStorage.getItem('admin_logged_in') === 'true') {
-                    const adminEmail = sessionStorage.getItem('admin_email');
-                    showUploadSection(adminEmail);
-                }
-            });
-        });
+        // Load logs from localStorage
+        function loadLogs() {
+            const savedLogs = localStorage.getItem('aircall_change_logs');
+            if (savedLogs) {
+                changeLogs = JSON.parse(savedLogs);
+            }
+        }
         
-        // Admin login - check against CSV from GitHub AND verify admin role
-        function adminLogin() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value;
-            const errorDiv = document.getElementById('loginError');
+        // Save logs to localStorage
+        function saveLogs() {
+            localStorage.setItem('aircall_change_logs', JSON.stringify(changeLogs));
+        }
+        
+        // Add log entry
+        function addLogEntry(changes, teamName, teamId) {
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                performedBy: currentUserEmail,
+                teamName: teamName,
+                teamId: teamId,
+                changes: changes
+            };
+            changeLogs.unshift(logEntry);
+            saveLogs();
+        }
+        
+        // Show logs modal
+        function showLogsModal() {
+            loadLogs();
+            const modal = document.getElementById('logsModal');
+            const content = document.getElementById('logsContent');
             
+            if (changeLogs.length === 0) {
+                content.innerHTML = '<p class="no-logs">No changes logged yet.</p>';
+            } else {
+                content.innerHTML = `
+                    <div class="logs-table-container">
+                        <table class="logs-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 180px;">Timestamp</th>
+                                    <th style="width: 250px;">Email Address</th>
+                                    <th>Changes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${changeLogs.map(log => {
+                                    const date = new Date(log.timestamp);
+                                    const formattedDate = date.toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit'
+                                    });
+                                    
+                                    const changesHtml = log.changes.map(change => {
+                                        const className = change.action === 'add' ? 'change-add' : 'change-remove';
+                                        return `<div class="change-item ${className}">${change.userName} (${change.userEmail})</div>`;
+                                    }).join('');
+                                    
+                                    return `
+                                        <tr>
+                                            <td class="log-timestamp">${formattedDate}</td>
+                                            <td class="log-email">${log.performedBy}</td>
+                                            <td class="log-changes">
+                                                ${changesHtml}
+                                                <div style="font-size: 12px; color: #6B7280; margin-top: 8px;">
+                                                    Team: ${log.teamName} (ID: ${log.teamId})
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // Close logs modal
+        function closeLogsModal() {
+            document.getElementById('logsModal').style.display = 'none';
+        }
+        
+        // Download logs as CSV
+        function downloadLogs() {
+            loadLogs();
+            
+            if (changeLogs.length === 0) {
+                alert('No logs to download.');
+                return;
+            }
+            
+            const headers = ['Timestamp', 'Email Address', 'Action', 'User Name', 'User Email', 'Team Name', 'Team ID'];
+            let csvContent = headers.join(',') + '\n';
+            
+            changeLogs.forEach(log => {
+                log.changes.forEach(change => {
+                    const row = [
+                        log.timestamp,
+                        log.performedBy,
+                        change.action === 'add' ? 'Added' : 'Removed',
+                        change.userName,
+                        change.userEmail,
+                        log.teamName,
+                        log.teamId
+                    ];
+                    csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+                });
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `aircall_changes_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('logsModal');
+            if (event.target == modal) {
+                closeLogsModal();
+            }
+        }
+        
+        // Get Basic Auth header
+        function getAuthHeader() {
+            return 'Basic ' + btoa(CONFIG.apiId + ':' + CONFIG.apiToken);
+        }
+        
+        // Update logged in user display
+        function updateUserDisplay() {
+            document.getElementById('loggedInUser').textContent = currentUserEmail;
+            document.getElementById('loggedInUser3').textContent = currentUserEmail;
+            
+            // Show role badge if admin
+            if (currentUserRole === 'admin') {
+                document.getElementById('userRoleBadge').innerHTML = '<span class="admin-badge-small">ADMIN</span>';
+                document.getElementById('userRoleBadge2').innerHTML = '<span class="admin-badge-small">ADMIN</span>';
+                document.getElementById('adminLink').style.display = 'block';
+            }
+        }
+        
+        // Check authentication on load
+        function checkAuth() {
+            const companyAuth = sessionStorage.getItem('aircall_company_auth');
+            const teamData = sessionStorage.getItem('aircall_selected_team');
+            const userEmail = sessionStorage.getItem('aircall_user_email');
+            const userRole = sessionStorage.getItem('aircall_user_role');
+            
+            if (companyAuth === 'true' && userEmail) {
+                isCompanyAuthenticated = true;
+                currentUserEmail = userEmail;
+                currentUserRole = userRole || 'user';
+                updateUserDisplay();
+                
+                if (teamData) {
+                    selectedTeam = JSON.parse(teamData);
+                    showMainApp();
+                } else {
+                    showTeamSelector();
+                }
+            } else {
+                showInitialLogin();
+            }
+        }
+        
+        // Show initial login screen
+        function showInitialLogin() {
+            document.getElementById('initialLogin').style.display = 'block';
+            document.getElementById('teamSelector').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+        
+        // Show team selector
+        function showTeamSelector() {
+            document.getElementById('initialLogin').style.display = 'none';
+            document.getElementById('teamSelector').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+            
+            // Show admin link only for admins
+            if (currentUserRole === 'admin') {
+                document.getElementById('adminLink').style.display = 'block';
+            }
+            
+            loadTeams();
+        }
+        
+        // Select team and go directly to main app
+        function selectTeam(team) {
+            selectedTeam = team;
+            sessionStorage.setItem('aircall_selected_team', JSON.stringify(selectedTeam));
+            showMainApp();
+        }
+        
+        // Show main application
+        function showMainApp() {
+            document.getElementById('initialLogin').style.display = 'none';
+            document.getElementById('teamSelector').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Show admin button only for admins
+            if (currentUserRole === 'admin') {
+                const adminBtn = document.getElementById('adminBtn');
+                if (adminBtn) adminBtn.style.display = 'inline-block';
+            }
+            
+            syncData();
+        }
+        
+        // Initial login with CSV authentication
+        function initialLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('userEmailInput').value.trim();
+            const password = document.getElementById('initialPasswordInput').value;
+            const errorDiv = document.getElementById('initialLoginError');
+            
+            errorDiv.style.display = 'none';
+            
+            // Check if CSV is loaded
             if (authorizedUsers.length === 0) {
-                errorDiv.textContent = 'No user database found on GitHub. Please upload User_List.csv first.';
+                errorDiv.textContent = 'No user database found. Please contact administrator.';
                 errorDiv.style.display = 'block';
                 return;
             }
             
-            // Check credentials against loaded users
+            // Find user in authorized list
             const user = authorizedUsers.find(u => 
                 u.email.toLowerCase() === email.toLowerCase() && u.password === password
             );
             
             if (user) {
-                // Check if user has admin role
-                if (user.role !== 'admin') {
-                    errorDiv.textContent = 'Access denied. Only users with admin role can access this page.';
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-                
-                // Admin authentication successful
-                sessionStorage.setItem('admin_logged_in', 'true');
-                sessionStorage.setItem('admin_email', email);
-                errorDiv.style.display = 'none';
-                showUploadSection(email);
+                // Authentication successful
+                sessionStorage.setItem('aircall_company_auth', 'true');
+                sessionStorage.setItem('aircall_user_email', user.email);
+                sessionStorage.setItem('aircall_user_role', user.role);
+                sessionStorage.setItem('aircall_allowed_teams', JSON.stringify(user.allowedTeams));
+                isCompanyAuthenticated = true;
+                currentUserEmail = user.email;
+                currentUserRole = user.role;
+                updateUserDisplay();
+                showTeamSelector();
             } else {
                 errorDiv.textContent = 'Invalid email or password.';
                 errorDiv.style.display = 'block';
+                document.getElementById('initialPasswordInput').value = '';
             }
         }
         
-        // Show upload section
-        function showUploadSection(email) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('adminEmailDisplay').textContent = email;
+        // Logout
+        function logout() {
+            sessionStorage.clear();
+            isCompanyAuthenticated = false;
+            selectedTeam = null;
+            currentUserEmail = '';
+            currentUserRole = '';
+            showInitialLogin();
         }
         
-        // Admin logout
-        function adminLogout() {
-            sessionStorage.removeItem('admin_logged_in');
-            sessionStorage.removeItem('admin_email');
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('uploadSection').style.display = 'none';
-            document.getElementById('adminEmail').value = '';
-            document.getElementById('adminPassword').value = '';
+        // Back to team selector
+        function backToTeamSelector() {
+            sessionStorage.removeItem('aircall_selected_team');
+            selectedTeam = null;
+            showTeamSelector();
         }
         
-        // Download current CSV from GitHub
-        async function downloadCurrentCSV() {
+        // Load all teams from Aircall and filter by allowed teams
+        async function loadTeams() {
+            const loading = document.getElementById('loading');
+            const teamsList = document.getElementById('teamsList');
+            
+            loading.style.display = 'block';
+            teamsList.innerHTML = '';
+            
             try {
-                const response = await fetch('User_List.csv');
-                if (!response.ok) {
-                    alert('No CSV file found on GitHub. Download the template instead.');
+                // Get allowed teams from session
+                const allowedTeamsJson = sessionStorage.getItem('aircall_allowed_teams');
+                const allowedTeams = allowedTeamsJson ? JSON.parse(allowedTeamsJson) : [];
+                
+                if (allowedTeams.length === 0) {
+                    teamsList.innerHTML = '<p style="color: #6B7280; text-align: center;">You do not have access to any teams.</p>';
+                    loading.style.display = 'none';
                     return;
                 }
                 
-                const csvContent = await response.text();
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'User_List.csv';
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch (error) {
-                alert('Error downloading CSV: ' + error.message);
-            }
-        }
-        
-        // Handle file selection
-        function handleFileSelect(event) {
-            selectedFile = event.target.files[0];
-            
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    validateAndPreviewCSV(content);
-                };
-                reader.readAsText(selectedFile);
-            }
-        }
-        
-        // Validate and preview CSV
-        function validateAndPreviewCSV(csvContent) {
-            const errorDiv = document.getElementById('uploadError');
-            const successDiv = document.getElementById('uploadSuccess');
-            const instructionsDiv = document.getElementById('uploadInstructions');
-            
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            
-            // Check header
-            const lines = csvContent.split('\n');
-            const header = lines[0].trim().toLowerCase();
-            
-            if (!header.includes('email') || !header.includes('password') || !header.includes('team') || !header.includes('role')) {
-                errorDiv.textContent = 'Invalid CSV format. First row must be: Email,Password,Team Access,Role';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Parse users
-            const users = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
+                // Fetch all teams from Aircall
+                const response = await fetch(`${baseUrl}teams`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': getAuthHeader(),
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
-                const matches = lines[i].match(regex) || [];
-                const values = matches.map(v => v.replace(/^"|"$/g, '').trim());
-                
-                if (values[0] && values[1]) {
-                    const role = (values[3] || 'user').toLowerCase().trim();
-                    users.push({
-                        email: values[0],
-                        password: '***',
-                        teams: values[2] || 'No teams',
-                        role: role
-                    });
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch teams: ${response.status}`);
                 }
-            }
-            
-            if (users.length === 0) {
-                errorDiv.textContent = 'No valid users found in CSV. Check your format.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Check if there's at least one admin
-            const hasAdmin = users.some(u => u.role === 'admin');
-            if (!hasAdmin) {
-                errorDiv.textContent = 'Warning: No admin users found in CSV. Add at least one admin to maintain access to admin panel!';
-                errorDiv.style.display = 'block';
-            }
-            
-            // Success!
-            successDiv.textContent = `CSV is valid! Found ${users.length} users (${users.filter(u => u.role === 'admin').length} admins, ${users.filter(u => u.role === 'user').length} users). Ready to upload to GitHub.`;
-            successDiv.style.display = 'block';
-            instructionsDiv.style.display = 'block';
-            
-            displayUsers(users);
-        }
-        
-        // Display users in the list
-        function displayUsers(users) {
-            const container = document.getElementById('currentUsers');
-            document.getElementById('userCount').textContent = users.length;
-            
-            if (users.length === 0) {
-                container.innerHTML = '<p style="color: #6B7280; text-align: center;">Select a CSV file to preview users</p>';
-                return;
-            }
-            
-            container.innerHTML = users.map(user => `
-                <div class="user-item">
-                    <div class="user-email">
-                        ${user.email}
-                        ${user.role === 'admin' ? '<span class="admin-badge">ADMIN</span>' : '<span style="color: #6B7280; font-size: 11px; margin-left: 8px;">(user)</span>'}
+                
+                const data = await response.json();
+                allTeams = data.teams || [];
+                
+                // Debug logging
+                console.log('Allowed teams from CSV:', allowedTeams);
+                console.log('All teams from Aircall:', allTeams.map(t => t.name));
+                
+                // Filter teams by allowed team names
+                const filteredTeams = allTeams.filter(team => 
+                    allowedTeams.includes(team.name)
+                );
+                
+                console.log('Filtered teams:', filteredTeams.map(t => t.name));
+                
+                if (filteredTeams.length === 0) {
+                    teamsList.innerHTML = '<p style="color: #6B7280; text-align: center;">No matching teams found. Check your team access permissions.</p>';
+                    loading.style.display = 'none';
+                    return;
+                }
+                
+                // Sort teams by name
+                filteredTeams.sort((a, b) => a.name.localeCompare(b.name));
+                
+                // Render team cards (only allowed teams)
+                teamsList.innerHTML = filteredTeams.map(team => `
+                   <div class="team-card" onclick='selectTeam(${JSON.stringify(team).replace(/'/g, "&#39;")})'>
+                        <h3>${team.name}</h3>
+                        <p><strong>Team ID:</strong> ${team.id}</p>
+                        <p><strong>Members:</strong> ${team.users ? team.users.length : 0}</p>
                     </div>
-                    <div class="user-teams">Teams: ${user.teams}</div>
-                </div>
-            `).join('');
+                `).join('');
+                
+                loading.style.display = 'none';
+            } catch (error) {
+                loading.style.display = 'none';
+                teamsList.innerHTML = `<div class="error-message" style="display: block;">Error loading teams: ${error.message}</div>`;
+            }
         }
         
-        // Download CSV template
-        function downloadTemplate() {
-            const template = `Email,Password,Team Access,Role
-user@company.com,yourpassword,"Sales Team,Support Team",admin
-john@company.com,pass123,Tech Team,user
-jane@company.com,pass456,"Team A,Team B",admin`;
+        // Show message
+        function showMessage(text, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
             
-            const blob = new Blob([template], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'User_List_Template.csv';
-            a.click();
-            URL.revokeObjectURL(url);
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
         }
+        
+        // Fetch all users with pagination
+        async function getAllUsers() {
+            let users = [];
+            let page = 1;
+            let hasMore = true;
+            
+            while (hasMore) {
+                const response = await fetch(`${baseUrl}users?per_page=50&page=${page}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': getAuthHeader(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch users: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                users = users.concat(data.users);
+                hasMore = data.meta.next_page_link !== null;
+                page++;
+            }
+            
+            return users;
+        }
+        
+        // Fetch team details
+        async function getTeamDetails(teamId) {
+            const response = await fetch(`${baseUrl}teams/${teamId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': getAuthHeader(),
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch team: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.team;
+        }
+        
+        // Sync data from Aircall
+        async function syncData() {
+            if (!selectedTeam) return;
+            
+            const loading = document.getElementById('loadingUsers');
+            const userList = document.getElementById('userList');
+            const syncBtn = document.getElementById('syncBtn');
+            
+            loading.style.display = 'block';
+            userList.style.display = 'none';
+            syncBtn.disabled = true;
+            
+            try {
+                allUsers = await getAllUsers();
+                const teamData = await getTeamDetails(selectedTeam.id);
+                teamMembers = teamData.users || [];
+                
+                originalTeamMemberEmails = new Set(teamMembers.map(m => m.email));
+                
+                document.getElementById('teamName').textContent = teamData.name;
+                document.getElementById('teamId').textContent = selectedTeam.id;
+                document.getElementById('teamInfo').style.display = 'block';
+                
+                renderUsers();
+                
+                loading.style.display = 'none';
+                userList.style.display = 'block';
+                document.getElementById('applyBtn').disabled = false;
+                syncBtn.disabled = false;
+                
+                showMessage(`Synced ${allUsers.length} users. Team has ${teamMembers.length} members.`, 'success');
+            } catch (error) {
+                loading.style.display = 'none';
+                showMessage(`Error: ${error.message}`, 'error');
+                syncBtn.disabled = false;
+            }
+        }
+        
+        // Render user list
+        function renderUsers() {
+            const teamMemberIds = new Set(teamMembers.map(m => m.id));
+            
+            const inTeam = [];
+            const available = [];
+            
+            allUsers.forEach(user => {
+                if (teamMemberIds.has(user.id)) {
+                    inTeam.push(user);
+                } else {
+                    available.push(user);
+                }
+            });
+            
+            inTeam.sort((a, b) => a.name.localeCompare(b.name));
+            available.sort((a, b) => a.name.localeCompare(b.name));
+            
+            document.getElementById('inTeamList').innerHTML = inTeam.map(user => createUserItem(user, true)).join('');
+            document.getElementById('inTeamCount').textContent = inTeam.length;
+            
+            document.getElementById('availableList').innerHTML = available.map(user => createUserItem(user, false)).join('');
+            document.getElementById('availableCount').textContent = available.length;
+        }
+        
+        // Create user item HTML
+        function createUserItem(user, isInTeam) {
+            const statusClass = user.availability_status === 'available' ? 'status-available' : 'status-unavailable';
+            return `
+                <div class="user-item" data-email="${user.email}" data-name="${user.name.toLowerCase()}">
+                    <input type="checkbox" 
+                           id="user-${user.id}" 
+                           data-user-id="${user.id}"
+                           data-user-name="${user.name}"
+                           data-email="${user.email}"
+                           ${isInTeam ? 'checked' : ''}>
+                    <div class="user-info">
+                        <div class="user-name">${user.name}</div>
+                        <div class="user-email">${user.email}</div>
+                    </div>
+                    <span class="status-badge ${statusClass}">${user.availability_status}</span>
+                </div>
+            `;
+        }
+        
+        // Filter users based on search
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-item');
+            
+            userItems.forEach(item => {
+                const name = item.dataset.name;
+                const email = item.dataset.email.toLowerCase();
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Select/deselect all
+        function selectAll(checked) {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = checked);
+        }
+        
+        // Select specific section
+        function selectSection(section) {
+            const listId = section === 'inTeam' ? 'inTeamList' : 'availableList';
+            const checkboxes = document.getElementById(listId).querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+        
+        // Apply changes to Aircall
+        async function applyChanges() {
+            if (!selectedTeam) return;
+            
+            const applyBtn = document.getElementById('applyBtn');
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Applying...';
+            
+            try {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                const changes = [];
+                const changesForLog = [];
+                
+                checkboxes.forEach(cb => {
+                    const email = cb.dataset.email;
+                    const userId = cb.dataset.userId;
+                    const userName = cb.dataset.userName;
+                    const isChecked = cb.checked;
+                    const wasInTeam = originalTeamMemberEmails.has(email);
+                    
+                    if (isChecked && !wasInTeam) {
+                        changes.push({ action: 'add', userId, email, userName });
+                    } else if (!isChecked && wasInTeam) {
+                        changes.push({ action: 'remove', userId, email, userName });
+                    }
+                });
+                
+                if (changes.length === 0) {
+                    showMessage('No changes to apply.', 'success');
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply Changes';
+                    return;
+                }
+                
+                let added = 0;
+                let removed = 0;
+                let errors = 0;
+                
+                const teamData = await getTeamDetails(selectedTeam.id);
+                
+                for (const change of changes) {
+                    try {
+                        const method = change.action === 'add' ? 'POST' : 'DELETE';
+                        const response = await fetch(`${baseUrl}teams/${selectedTeam.id}/users/${change.userId}`, {
+                            method: method,
+                            headers: {
+                                'Authorization': getAuthHeader(),
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok || response.status === 204) {
+                            if (change.action === 'add') {
+                                added++;
+                            } else {
+                                removed++;
+                            }
+                            
+                            changesForLog.push({
+                                action: change.action,
+                                userName: change.userName,
+                                userEmail: change.email
+                            });
+                        } else {
+                            errors++;
+                        }
+                    } catch (error) {
+                        errors++;
+                    }
+                }
+                
+                if (changesForLog.length > 0) {
+                    addLogEntry(changesForLog, teamData.name, selectedTeam.id);
+                }
+                
+                let message = `Changes applied: ${added} added, ${removed} removed`;
+                if (errors > 0) {
+                    message += `. ${errors} errors occurred.`;
+                }
+                
+                showMessage(message, errors > 0 ? 'error' : 'success');
+                
+                await syncData();
+                
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply Changes';
+            }
+        }
+        
+        // Load everything on page load
+        window.addEventListener('load', () => {
+            if (!checkApiCredentials()) {
+                return;
+            }
+            loadUsersFromCSV();
+            loadLogs();
+            checkAuth();
+        });
     </script>
 </body>
 </html>

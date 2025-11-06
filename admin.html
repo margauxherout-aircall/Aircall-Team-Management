@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Users CSV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .upload-section {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="email"],
+        input[type="password"],
+        input[type="file"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        
+        button:hover:not(:disabled) {
+            background: #3367D6;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        button.success {
+            background: #34A853;
+        }
+        
+        button.download {
+            background: #FF9800;
+        }
+        
+        button.download:hover {
+            background: #F57C00;
+        }
+        
+        button.logout {
+            background: #EA4335;
+            margin-top: 20px;
+        }
+        
+        .error-message,
+        .success-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #E57373;
+            display: none;
+        }
+        
+        .success-message {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #81C784;
+            display: none;
+        }
+        
+        .info-box {
+            background: #E3F2FD;
+            border: 1px solid #90CAF9;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            color: #1565C0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .info-box p {
+            color: #1976D2;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .info-box code {
+            background: #BBDEFB;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+            color: #1976D2;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .warning-box {
+            background: #FFF3E0;
+            border: 1px solid #FFB74D;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .warning-box h4 {
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box p {
+            color: #E65100;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .current-users {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .current-users h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        
+        .user-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        
+        .user-email {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .user-teams {
+            color: #666;
+            margin-top: 3px;
+            font-size: 12px;
+        }
+        
+        .admin-badge {
+            display: inline-block;
+            background: #F3E5F5;
+            color: #7B1FA2;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .step-box {
+            background: #F5F5F5;
+            border-left: 4px solid #4285F4;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .step-box h4 {
+            color: #4285F4;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        
+        .step-box p {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .csv-example {
+            background: #263238;
+            color: #AED581;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .button-group button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👩‍💼 Admin Panel</h1>
+        <p class="subtitle">Manage user access and permissions</p>
+        
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <div class="form-group">
+                <label for="adminEmail">Email:</label>
+                <input type="email" id="adminEmail" placeholder="your.email@bikeleasing.de">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter your password from the CSV">
+            </div>
+            <div id="loginError" class="error-message"></div>
+            <button onclick="adminLogin()">Login</button>
+        </div>
+        
+        <!-- Upload Section (hidden until login) -->
+        <div id="uploadSection" class="upload-section">
+            <div style="margin-bottom: 20px;">
+                <span style="color: #666;">Logged in as:</span>
+                <strong id="adminEmailDisplay"></strong>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="info-box">
+                <h3>📋 How to Update the User List</h3>
+                
+                <div class="step-box">
+                    <h4>Step 1: Download Current CSV</h4>
+                    <p>Click the "Download Current CSV" button below to get the current user list from GitHub.</p>
+                </div>
+                
+                <div class="step-box">
+                    <h4>Step 2: Edit the CSV File</h4>
+                    <p>Open the downloaded file in Excel or Google Sheets. You can:</p>
+                    <ul>
+                        <li>Add new users</li>
+                        <li>Update passwords</li>
+                        <li>Change team access</li>
+                        <li>Set user roles (admin or user)</li>
+                        <li>Remove users (delete the row)</li>
+                    </ul>
+                </div>
+                
+                <div class="step-box">
+                    <h4>Step 3: Save as CSV</h4>
+                    <p>Save your changes as CSV format (not .xlsx):</p>
+                    <ul>
+                        <li><strong>Excel:</strong> File → Save As → CSV (Comma delimited)</li>
+                        <li><strong>Google Sheets:</strong> File → Download → Comma Separated Values (.csv)</li>
+                    </ul>
+                </div>
+                
+                <div class="step-box">
+                    <h4>Step 4: Upload to GitHub</h4>
+                    <p>Upload the new CSV file to GitHub to replace the old one. This page will help you prepare the file, but you must manually upload it to GitHub.</p>
+                </div>
+            </div>
+            
+            <!-- CSV Format Guide -->
+            <div class="info-box">
+                <h3>📝 CSV File Format</h3>
+                <p><strong>Required columns (in this exact order):</strong></p>
+                <div class="csv-example">Email,Password,Team Access,Role
+katharina.stauder@bikeleasing.de,mypassword,"Sales Team,Support Team",admin
+john@bikeleasing.de,pass123,Tech Team,user
+jane@bikeleasing.de,pass456,"BLS: Support,AT: Support",admin</div>
+                
+                <p><strong>Important rules:</strong></p>
+                <ul>
+                    <li><strong>First row must be:</strong> <code>Email,Password,Team Access,Role</code></li>
+                    <li><strong>Email:</strong> User's email address (must match their Aircall email)</li>
+                    <li><strong>Password:</strong> Any password you choose (users will use this to login)</li>
+                    <li><strong>Team Access:</strong> 
+                        <ul>
+                            <li>Single team: <code>Tech Team</code> (no quotes)</li>
+                            <li>Multiple teams: <code>"Sales Team,Support Team"</code> (with quotes)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Role:</strong> Either <code>admin</code> or <code>user</code>
+                        <ul>
+                            <li><code>admin</code> - Can access admin panel to manage users</li>
+                            <li><code>user</code> - Can only manage teams</li>
+                        </ul>
+                    </li>
+                    <li><strong>Team names must exactly match</strong> the team names in Aircall</li>
+                </ul>
+            </div>
+            
+            <!-- Warning Box -->
+            <div class="warning-box">
+                <h4>⚠️ Important Security Note</h4>
+                <p><strong>After uploading to GitHub:</strong></p>
+                <ul>
+                    <li>Users must refresh their browser to see changes</li>
+                    <li>Changes take effect immediately</li>
+                    <li>Keep your GitHub repository private if possible</li>
+                    <li>Passwords in the CSV are visible to anyone with access to the repository</li>
+                    <li>Only users with <code>admin</code> role can access this admin panel</li>
+                </ul>
+            </div>
+            
+            <div id="uploadError" class="error-message"></div>
+            <div id="uploadSuccess" class="success-message"></div>
+            
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button class="download" onclick="downloadCurrentCSV()">⬇️ Download Current CSV from GitHub</button>
+                <button class="download" onclick="downloadTemplate()">📄 Download Empty Template</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="csvFile">Preview & Validate Your CSV File:</label>
+                <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    ℹ️ This will validate your CSV format. After validation, you must manually upload the file to GitHub.
+                </p>
+            </div>
+            
+            <!-- Current Users Display -->
+            <div class="current-users">
+                <h3>Preview: Users in Selected File (<span id="userCount">0</span>)</h3>
+                <div id="currentUsers" class="user-list">
+                    <p style="color: #666; text-align: center;">Select a CSV file to preview users</p>
+                </div>
+            </div>
+            
+            <!-- GitHub Upload Instructions -->
+            <div class="info-box" id="uploadInstructions" style="display: none;">
+                <h3>🚀 Next Step: Upload to GitHub</h3>
+                <p><strong>Your CSV file is valid!</strong> Now upload it to GitHub:</p>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Go to your GitHub repository</li>
+                    <li>Click on <code>User_List.csv</code> (if it exists)</li>
+                    <li>Click the pencil icon (✏️) to edit, OR click "Add file" → "Upload files"</li>
+                    <li>Upload your new CSV file</li>
+                    <li>Scroll down and click "Commit changes"</li>
+                    <li>Done! Users can now login with the new credentials</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>GitHub Repository URL:</strong></p>
+                <input type="text" id="githubUrl" placeholder="https://github.com/yourusername/your-repo" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #90CAF9; border-radius: 4px;">
+            </div>
+            
+            <button class="logout" onclick="adminLogout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let currentUsers = [];
+        let authorizedUsers = [];
+        
+        // Load users from GitHub on page load
+        async function loadUsersFromGitHub() {
+            try {
+                const response = await fetch('User_List.csv');
+                if (!response.ok) {
+                    console.log('No CSV found on GitHub yet');
+                    return;
+                }
+                
+                const csvContent = await response.text();
+                const lines = csvContent.split('\n').slice(1);
+                
+                authorizedUsers = lines
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+                        const matches = line.match(regex) || [];
+                        const values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                        
+                        return {
+                            email: values[0] || '',
+                            password: values[1] || '',
+                            allowedTeams: values[2] ? values[2].split(',').map(t => t.trim()) : [],
+                            role: (values[3] || 'user').toLowerCase().trim()
+                        };
+                    })
+                    .filter(user => user.email && user.password);
+                
+                console.log('Loaded users from GitHub:', authorizedUsers.length);
+            } catch (error) {
+                console.error('Error loading users from GitHub:', error);
+            }
+        }
+        
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            loadUsersFromGitHub().then(() => {
+                if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                    const adminEmail = sessionStorage.getItem('admin_email');
+                    showUploadSection(adminEmail);
+                }
+            });
+        });
+        
+        // Admin login - check against CSV from GitHub AND verify admin role
+        function adminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (authorizedUsers.length === 0) {
+                errorDiv.textContent = 'No user database found on GitHub. Please upload User_List.csv first.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Check credentials against loaded users
+            const user = authorizedUsers.find(u => 
+                u.email.toLowerCase() === email.toLowerCase() && u.password === password
+            );
+            
+            if (user) {
+                // Check if user has admin role
+                if (user.role !== 'admin') {
+                    errorDiv.textContent = 'Access denied. Only users with admin role can access this page.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                // Admin authentication successful
+                sessionStorage.setItem('admin_logged_in', 'true');
+                sessionStorage.setItem('admin_email', email);
+                errorDiv.style.display = 'none';
+                showUploadSection(email);
+            } else {
+                errorDiv.textContent = 'Invalid email or password.';
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        // Show upload section
+        function showUploadSection(email) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('adminEmailDisplay').textContent = email;
+        }
+        
+        // Admin logout
+        function adminLogout() {
+            sessionStorage.removeItem('admin_logged_in');
+            sessionStorage.removeItem('admin_email');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        // Download current CSV from GitHub
+        async function downloadCurrentCSV() {
+            try {
+                const response = await fetch('User_List.csv');
+                if (!response.ok) {
+                    alert('No CSV file found on GitHub. Download the template instead.');
+                    return;
+                }
+                
+                const csvContent = await response.text();
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'User_List.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error downloading CSV: ' + error.message);
+            }
+        }
+        
+        // Handle file selection
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    validateAndPreviewCSV(content);
+                };
+                reader.readAsText(selectedFile);
+            }
+        }
+        
+        // Validate and preview CSV
+        function validateAndPreviewCSV(csvContent) {
+            const errorDiv = document.getElementById('uploadError');
+            const successDiv = document.getElementById('uploadSuccess');
+            const instructionsDiv = document.getElementById('uploadInstructions');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Check header
+            const lines = csvContent.split('\n');
+            const header = lines[0].trim().toLowerCase();
+            
+            if (!header.includes('email') || !header.includes('password') || !header.includes('team') || !header.includes('role')) {
+                errorDiv.textContent = '❌ Invalid CSV format. First row must be: Email,Password,Team Access,Role';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Parse users
+            const users = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+                const matches = lines[i].match(regex) || [];
+                const values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                
+                if (values[0] && values[1]) {
+                    const role = (values[3] || 'user').toLowerCase().trim();
+                    users.push({
+                        email: values[0],
+                        password: '***',
+                        teams: values[2] || 'No teams',
+                        role: role
+                    });
+                }
+            }
+            
+            if (users.length === 0) {
+                errorDiv.textContent = '❌ No valid users found in CSV. Check your format.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Check if there's at least one admin
+            const hasAdmin = users.some(u => u.role === 'admin');
+            if (!hasAdmin) {
+                errorDiv.textContent = '⚠️ Warning: No admin users found in CSV. Add at least one admin to maintain access to admin panel!';
+                errorDiv.style.display = 'block';
+            }
+            
+            // Success!
+            successDiv.textContent = `✅ CSV is valid! Found ${users.length} users (${users.filter(u => u.role === 'admin').length} admins, ${users.filter(u => u.role === 'user').length} users). Ready to upload to GitHub.`;
+            successDiv.style.display = 'block';
+            instructionsDiv.style.display = 'block';
+            
+            displayUsers(users);
+        }
+        
+        // Display users in the list
+        function displayUsers(users) {
+            const container = document.getElementById('currentUsers');
+            document.getElementById('userCount').textContent = users.length;
+            
+            if (users.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">Select a CSV file to preview users</p>';
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div class="user-item">
+                    <div class="user-email">
+                        ${user.email}
+                        ${user.role === 'admin' ? '<span class="admin-badge">ADMIN</span>' : '<span style="color: #999; font-size: 11px; margin-left: 8px;">(user)</span>'}
+                    </div>
+                    <div class="user-teams">Teams: ${user.teams}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Download CSV template
+        function downloadTemplate() {
+            const template = `Email,Password,Team Access,Role
+katharina.stauder@bikeleasing.de,yourpassword,"Sales Team,Support Team",admin
+john@bikeleasing.de,pass123,Tech Team,user
+jane@bikeleasing.de,pass456,"BLS: Support,AT: Support",admin`;
+            
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'User_List_Template.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

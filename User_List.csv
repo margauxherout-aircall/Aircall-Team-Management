@@ -1,4 +1,4 @@
-E-Mail,Password,Team Access,ADMIN
+E-Mail,Password,Team Access,Role
 stefano+demo@aircall.io,aircall2025,"Brokers Group, Equipe 1, Koens BPO 2, ShiftGroup:242679:63275, ShiftGroup:261765:63381, ShiftGroup:310758:63382, Solutions Engineering",admin
 margaux.herout+demo@aircall.io,aircall2025,"Ben test team, Brokers Group, Equipe 1, Koens BPO 2, Martin Test US - Shift Group, Martin Test US 22 - Shift Group, Mary's Test support team, Pat Team 76, Pat Test Team, RMA permanence, ShiftGroup:242679:63275, ShiftGroup:261765:63381, ShiftGroup:310758:63382, Solutions Engineering, Testing Team, The Koens, The Pats 77, Tiffany's minions, Tiffany's postman team",admin
 sharifah+3@aircall.io,aircall2025,"Ben test team, Brokers Group, Equipe 1, Koens BPO 2, Martin Test US - Shift Group, Martin Test US 22 - Shift Group, Mary's Test support team, Pat Team 76, Pat Test Team, RMA permanence, ShiftGroup:242679:63275, ShiftGroup:261765:63381, ShiftGroup:310758:63382, Solutions Engineering, Testing Team, The Koens, The Pats 77, Tiffany's minions, Tiffany's postman team",admin
@@ -21,3 +21,4 @@ tiffany.hu+demo@aircall.io,aircall2025,"Tiff's test team, Tiffany's minions, Tif
 ,aircall2025,,
 ,aircall2025,,
 ,aircall2025,,
+

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f5f5f5;
+            background: #F7F8FC;
             padding: 20px;
         }
         
@@ -27,19 +27,19 @@
         }
         
         h1 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 10px;
         }
         
         .subtitle {
-            color: #666;
+            color: #6B7280;
             margin-bottom: 30px;
         }
         
         .login-section {
             margin-bottom: 30px;
             padding-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid #F7F8FC;
         }
         
         .upload-section {
@@ -54,7 +54,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #1A1F36;
         }
         
         input[type="email"],
@@ -63,13 +63,20 @@
         input[type="text"] {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE3ED;
             border-radius: 6px;
             font-size: 14px;
         }
         
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00BD82;
+        }
+        
         button {
-            background: #4285F4;
+            background: #00BD82;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -82,29 +89,34 @@
         }
         
         button:hover:not(:disabled) {
-            background: #3367D6;
+            background: #00A872;
         }
         
         button:disabled {
-            background: #ccc;
+            background: #DDE3ED;
             cursor: not-allowed;
         }
         
         button.success {
-            background: #34A853;
+            background: #00BD82;
         }
         
         button.download {
-            background: #FF9800;
+            background: #FFC000;
+            color: #1A1F36;
         }
         
         button.download:hover {
-            background: #F57C00;
+            background: #E6AD00;
         }
         
         button.logout {
-            background: #EA4335;
+            background: #E53E3E;
             margin-top: 20px;
+        }
+        
+        button.logout:hover {
+            background: #C53030;
         }
         
         .error-message,
@@ -116,42 +128,42 @@
         }
         
         .error-message {
-            background: #FFEBEE;
-            color: #C62828;
-            border: 1px solid #E57373;
+            background: #FEF0F0;
+            color: #E53E3E;
+            border: 1px solid #FEB2B2;
             display: none;
         }
         
         .success-message {
-            background: #E8F5E9;
-            color: #2E7D32;
-            border: 1px solid #81C784;
+            background: #F0FDF9;
+            color: #00BD82;
+            border: 1px solid #9AE6C9;
             display: none;
         }
         
         .info-box {
-            background: #E3F2FD;
-            border: 1px solid #90CAF9;
+            background: #F0F9FF;
+            border: 1px solid #BAE6FD;
             border-radius: 6px;
             padding: 20px;
             margin-bottom: 20px;
         }
         
         .info-box h3 {
-            color: #1565C0;
+            color: #0369A1;
             margin-bottom: 15px;
             font-size: 16px;
         }
         
         .info-box p {
-            color: #1976D2;
+            color: #0C4A6E;
             font-size: 14px;
             line-height: 1.8;
             margin-bottom: 10px;
         }
         
         .info-box code {
-            background: #BBDEFB;
+            background: #E0F2FE;
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 12px;
@@ -161,7 +173,7 @@
         .info-box ul {
             margin-left: 20px;
             margin-top: 10px;
-            color: #1976D2;
+            color: #0C4A6E;
         }
         
         .info-box li {
@@ -170,20 +182,20 @@
         }
         
         .warning-box {
-            background: #FFF3E0;
-            border: 1px solid #FFB74D;
+            background: #FFF7ED;
+            border: 1px solid #FED7AA;
             border-radius: 6px;
             padding: 15px;
             margin-bottom: 20px;
         }
         
         .warning-box h4 {
-            color: #E65100;
+            color: #C2410C;
             margin-bottom: 10px;
         }
         
         .warning-box p {
-            color: #E65100;
+            color: #C2410C;
             font-size: 13px;
             line-height: 1.6;
         }
@@ -191,25 +203,25 @@
         .current-users {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
+            border-top: 2px solid #F7F8FC;
         }
         
         .current-users h3 {
-            color: #333;
+            color: #1A1F36;
             margin-bottom: 15px;
         }
         
         .user-list {
             max-height: 300px;
             overflow-y: auto;
-            border: 1px solid #ddd;
+            border: 1px solid #DDE3ED;
             border-radius: 6px;
             padding: 10px;
         }
         
         .user-item {
             padding: 8px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #DDE3ED;
             font-size: 13px;
         }
         
@@ -219,19 +231,19 @@
         
         .user-email {
             font-weight: 600;
-            color: #333;
+            color: #1A1F36;
         }
         
         .user-teams {
-            color: #666;
+            color: #6B7280;
             margin-top: 3px;
             font-size: 12px;
         }
         
         .admin-badge {
             display: inline-block;
-            background: #F3E5F5;
-            color: #7B1FA2;
+            background: #FFF5E6;
+            color: #FFC000;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 11px;
@@ -240,28 +252,28 @@
         }
         
         .step-box {
-            background: #F5F5F5;
-            border-left: 4px solid #4285F4;
+            background: #FAFBFC;
+            border-left: 4px solid #00BD82;
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 4px;
         }
         
         .step-box h4 {
-            color: #4285F4;
+            color: #00BD82;
             margin-bottom: 10px;
             font-size: 15px;
         }
         
         .step-box p {
-            color: #333;
+            color: #1A1F36;
             font-size: 14px;
             line-height: 1.6;
         }
         
         .csv-example {
-            background: #263238;
-            color: #AED581;
+            background: #1A1F36;
+            color: #9AE6C9;
             padding: 15px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
@@ -283,14 +295,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>👩‍💼 Admin Panel</h1>
+        <h1>Admin Panel</h1>
         <p class="subtitle">Manage user access and permissions</p>
         
         <!-- Login Section -->
         <div id="loginSection" class="login-section">
             <div class="form-group">
                 <label for="adminEmail">Email:</label>
-                <input type="email" id="adminEmail" placeholder="your.email@aircall.io">
+                <input type="email" id="adminEmail" placeholder="your.email@company.com">
             </div>
             <div class="form-group">
                 <label for="adminPassword">Password:</label>
@@ -303,14 +315,14 @@
         <!-- Upload Section (hidden until login) -->
         <div id="uploadSection" class="upload-section">
             <div style="margin-bottom: 20px;">
-                <span style="color: #666;">Logged in as:</span>
+                <span style="color: #6B7280;">Logged in as:</span>
                 <strong id="adminEmailDisplay"></strong>
                 <span class="admin-badge">ADMIN</span>
             </div>
             
             <!-- Instructions -->
             <div class="info-box">
-                <h3>📋 How to Update the User List</h3>
+                <h3>How to Update the User List</h3>
                 
                 <div class="step-box">
                     <h4>Step 1: Download Current CSV</h4>
@@ -346,12 +358,12 @@
             
             <!-- CSV Format Guide -->
             <div class="info-box">
-                <h3>📝 CSV File Format</h3>
+                <h3>CSV File Format</h3>
                 <p><strong>Required columns (in this exact order):</strong></p>
                 <div class="csv-example">Email,Password,Team Access,Role
-stef@aircall.io,mypassword,"Sales Team,Support Team",admin
-john@aircall.io,pass123,Tech Team,user
-jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
+user@company.com,mypassword,"Sales Team,Support Team",admin
+john@company.com,pass123,Tech Team,user
+jane@company.com,pass456,"Team A,Team B",admin</div>
                 
                 <p><strong>Important rules:</strong></p>
                 <ul>
@@ -376,7 +388,7 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             
             <!-- Warning Box -->
             <div class="warning-box">
-                <h4>⚠️ Important Security Note</h4>
+                <h4>Important Security Note</h4>
                 <p><strong>After uploading to GitHub:</strong></p>
                 <ul>
                     <li>Users must refresh their browser to see changes</li>
@@ -392,15 +404,15 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             
             <!-- Action Buttons -->
             <div class="button-group">
-                <button class="download" onclick="downloadCurrentCSV()">⬇️ Download Current CSV from GitHub</button>
-                <button class="download" onclick="downloadTemplate()">📄 Download Empty Template</button>
+                <button class="download" onclick="downloadCurrentCSV()">Download Current CSV from GitHub</button>
+                <button class="download" onclick="downloadTemplate()">Download Empty Template</button>
             </div>
             
             <div class="form-group">
                 <label for="csvFile">Preview & Validate Your CSV File:</label>
                 <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
-                <p style="font-size: 12px; color: #666; margin-top: 8px;">
-                    ℹ️ This will validate your CSV format. After validation, you must manually upload the file to GitHub.
+                <p style="font-size: 12px; color: #6B7280; margin-top: 8px;">
+                    This will validate your CSV format. After validation, you must manually upload the file to GitHub.
                 </p>
             </div>
             
@@ -408,24 +420,24 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             <div class="current-users">
                 <h3>Preview: Users in Selected File (<span id="userCount">0</span>)</h3>
                 <div id="currentUsers" class="user-list">
-                    <p style="color: #666; text-align: center;">Select a CSV file to preview users</p>
+                    <p style="color: #6B7280; text-align: center;">Select a CSV file to preview users</p>
                 </div>
             </div>
             
             <!-- GitHub Upload Instructions -->
             <div class="info-box" id="uploadInstructions" style="display: none;">
-                <h3>🚀 Next Step: Upload to GitHub</h3>
+                <h3>Next Step: Upload to GitHub</h3>
                 <p><strong>Your CSV file is valid!</strong> Now upload it to GitHub:</p>
                 <ol style="margin-left: 20px; margin-top: 10px;">
                     <li>Go to your GitHub repository</li>
                     <li>Click on <code>User_List.csv</code> (if it exists)</li>
-                    <li>Click the pencil icon (✏️) to edit, OR click "Add file" → "Upload files"</li>
+                    <li>Click the pencil icon to edit, OR click "Add file" → "Upload files"</li>
                     <li>Upload your new CSV file</li>
                     <li>Scroll down and click "Commit changes"</li>
                     <li>Done! Users can now login with the new credentials</li>
                 </ol>
                 <p style="margin-top: 15px;"><strong>GitHub Repository URL:</strong></p>
-                <input type="text" id="githubUrl" placeholder="https://github.com/yourusername/your-repo" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #90CAF9; border-radius: 4px;">
+                <input type="text" id="githubUrl" placeholder="https://github.com/yourusername/your-repo" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #BAE6FD; border-radius: 4px;">
             </div>
             
             <button class="logout" onclick="adminLogout()">Logout</button>
@@ -584,7 +596,7 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             const header = lines[0].trim().toLowerCase();
             
             if (!header.includes('email') || !header.includes('password') || !header.includes('team') || !header.includes('role')) {
-                errorDiv.textContent = '❌ Invalid CSV format. First row must be: Email,Password,Team Access,Role';
+                errorDiv.textContent = 'Invalid CSV format. First row must be: Email,Password,Team Access,Role';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -610,7 +622,7 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             }
             
             if (users.length === 0) {
-                errorDiv.textContent = '❌ No valid users found in CSV. Check your format.';
+                errorDiv.textContent = 'No valid users found in CSV. Check your format.';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -618,12 +630,12 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             // Check if there's at least one admin
             const hasAdmin = users.some(u => u.role === 'admin');
             if (!hasAdmin) {
-                errorDiv.textContent = '⚠️ Warning: No admin users found in CSV. Add at least one admin to maintain access to admin panel!';
+                errorDiv.textContent = 'Warning: No admin users found in CSV. Add at least one admin to maintain access to admin panel!';
                 errorDiv.style.display = 'block';
             }
             
             // Success!
-            successDiv.textContent = `✅ CSV is valid! Found ${users.length} users (${users.filter(u => u.role === 'admin').length} admins, ${users.filter(u => u.role === 'user').length} users). Ready to upload to GitHub.`;
+            successDiv.textContent = `CSV is valid! Found ${users.length} users (${users.filter(u => u.role === 'admin').length} admins, ${users.filter(u => u.role === 'user').length} users). Ready to upload to GitHub.`;
             successDiv.style.display = 'block';
             instructionsDiv.style.display = 'block';
             
@@ -636,7 +648,7 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
             document.getElementById('userCount').textContent = users.length;
             
             if (users.length === 0) {
-                container.innerHTML = '<p style="color: #666; text-align: center;">Select a CSV file to preview users</p>';
+                container.innerHTML = '<p style="color: #6B7280; text-align: center;">Select a CSV file to preview users</p>';
                 return;
             }
             
@@ -644,7 +656,7 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
                 <div class="user-item">
                     <div class="user-email">
                         ${user.email}
-                        ${user.role === 'admin' ? '<span class="admin-badge">ADMIN</span>' : '<span style="color: #999; font-size: 11px; margin-left: 8px;">(user)</span>'}
+                        ${user.role === 'admin' ? '<span class="admin-badge">ADMIN</span>' : '<span style="color: #6B7280; font-size: 11px; margin-left: 8px;">(user)</span>'}
                     </div>
                     <div class="user-teams">Teams: ${user.teams}</div>
                 </div>
@@ -654,9 +666,9 @@ jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
         // Download CSV template
         function downloadTemplate() {
             const template = `Email,Password,Team Access,Role
-stef@aircall.io,mypassword,"Sales Team,Support Team",admin
-john@aircall.io,pass123,Tech Team,user
-jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin`;
+user@company.com,yourpassword,"Sales Team,Support Team",admin
+john@company.com,pass123,Tech Team,user
+jane@company.com,pass456,"Team A,Team B",admin`;
             
             const blob = new Blob([template], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);

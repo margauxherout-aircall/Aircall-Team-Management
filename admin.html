@@ -290,7 +290,7 @@
         <div id="loginSection" class="login-section">
             <div class="form-group">
                 <label for="adminEmail">Email:</label>
-                <input type="email" id="adminEmail" placeholder="your.email@bikeleasing.de">
+                <input type="email" id="adminEmail" placeholder="your.email@aircall.io">
             </div>
             <div class="form-group">
                 <label for="adminPassword">Password:</label>
@@ -349,9 +349,9 @@
                 <h3>📝 CSV File Format</h3>
                 <p><strong>Required columns (in this exact order):</strong></p>
                 <div class="csv-example">Email,Password,Team Access,Role
-katharina.stauder@bikeleasing.de,mypassword,"Sales Team,Support Team",admin
-john@bikeleasing.de,pass123,Tech Team,user
-jane@bikeleasing.de,pass456,"BLS: Support,AT: Support",admin</div>
+stef@aircall.io,mypassword,"Sales Team,Support Team",admin
+john@aircall.io,pass123,Tech Team,user
+jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin</div>
                 
                 <p><strong>Important rules:</strong></p>
                 <ul>
@@ -654,9 +654,9 @@ jane@bikeleasing.de,pass456,"BLS: Support,AT: Support",admin</div>
         // Download CSV template
         function downloadTemplate() {
             const template = `Email,Password,Team Access,Role
-katharina.stauder@bikeleasing.de,yourpassword,"Sales Team,Support Team",admin
-john@bikeleasing.de,pass123,Tech Team,user
-jane@bikeleasing.de,pass456,"BLS: Support,AT: Support",admin`;
+stef@aircall.io,mypassword,"Sales Team,Support Team",admin
+john@aircall.io,pass123,Tech Team,user
+jane@aircall.io,pass456,"Tiff Minions,The Pats 77",admin`;
             
             const blob = new Blob([template], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);

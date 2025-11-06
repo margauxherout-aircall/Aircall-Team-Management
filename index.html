@@ -699,13 +699,33 @@
     </div>
 
     <script>
-        // Configuration
+        // Configuration - API credentials stored in session
         const CONFIG = {
-            apiId: "4776e44adffee1a59ea98477484e7717",
-            apiToken: "7da76007f57134c722a2ae1585f7223d",
+            apiId: sessionStorage.getItem('aircall_api_id') || '',
+            apiToken: sessionStorage.getItem('aircall_api_token') || '',
         };
         
         const baseUrl = "https://api.aircall.io/v1/";
+        
+        // Check if API credentials are configured
+        function checkApiCredentials() {
+            if (!CONFIG.apiId || !CONFIG.apiToken) {
+                const apiId = prompt('Enter Aircall API ID:');
+                const apiToken = prompt('Enter Aircall API Token:');
+                
+                if (apiId && apiToken) {
+                    sessionStorage.setItem('aircall_api_id', apiId);
+                    sessionStorage.setItem('aircall_api_token', apiToken);
+                    CONFIG.apiId = apiId;
+                    CONFIG.apiToken = apiToken;
+                    return true;
+                } else {
+                    alert('API credentials are required to use this application.');
+                    return false;
+                }
+            }
+            return true;
+        }
         
         let allUsers = [];
         let teamMembers = [];
@@ -1365,6 +1385,9 @@
         
         // Load everything on page load
         window.addEventListener('load', () => {
+            if (!checkApiCredentials()) {
+                return;
+            }
             loadUsersFromCSV();
             loadLogs();
             checkAuth();

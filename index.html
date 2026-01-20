@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aircall Team Management</title>
+    <link rel="icon" type="image/x-icon" href="https://luna-bucket-production-standard.s3.eu-west-1.amazonaws.com/favicon-32x32.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,57 +20,78 @@
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; }
         
-        /* Layout Modules */
+        /* Layout */
         .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .app-container { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
+        .app-container { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
         
         .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; max-width: 440px; text-align: center; }
         .input-group { margin-bottom: 16px; text-align: left; }
         .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
+        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
 
-        button { width: 100%; padding: 12px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button { padding: 12px 24px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--aircall-green-hover); }
         button:disabled { background: var(--border); cursor: not-allowed; }
 
-        /* Team & User Lists */
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .team-card { background: var(--white); padding: 24px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; }
-        .team-card:hover { border-color: var(--aircall-green); }
-
-        .management-view { display: none; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
-        .user-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
-        .user-item input { width: auto; margin-right: 15px; }
-        
+        /* Dashboard & Teams */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .back-link { color: var(--aircall-green); cursor: pointer; font-size: 14px; font-weight: 500; }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .team-card { background: var(--white); padding: 24px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .team-card:hover { border-color: var(--aircall-green); transform: translateY(-2px); }
+
+        /* Management View Split Layout */
+        .management-container { display: none; gap: 30px; align-items: flex-start; }
+        .sidebar { position: sticky; top: 40px; width: 300px; display: flex; flex-direction: column; gap: 20px; }
+        .main-content { flex: 1; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
+
+        .search-container { margin-bottom: 20px; position: relative; }
+        .user-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); transition: 0.2s; }
+        .user-item:hover { background: #f9fafb; }
+        .user-item input { width: auto; margin-right: 15px; transform: scale(1.2); cursor: pointer; }
+        
+        .status-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; margin-left: 10px; }
+        .available { background: #E6FFFA; color: #047481; }
+        .unavailable { background: #FFF5F5; color: #C53030; }
+
+        .back-link { color: var(--aircall-green); cursor: pointer; font-size: 14px; font-weight: 500; text-decoration: none; }
     </style>
 </head>
 <body>
 
     <div id="loginView" class="login-wrapper">
         <div class="card">
-            <h2>Connect to Aircall</h2>
+            <img src="https://luna-bucket-production-standard.s3.eu-west-1.amazonaws.com/favicon-32x32.png" style="width: 40px; margin-bottom: 20px;">
+            <h2>Team Manager</h2>
             <div class="input-group"><label>API ID</label><input type="text" id="apiId"></div>
             <div class="input-group"><label>API Token</label><input type="password" id="apiToken"></div>
-            <button onclick="handleLogin()">Login</button>
+            <button onclick="handleLogin()" style="width: 100%;">Connect Dashboard</button>
         </div>
     </div>
 
     <div id="appView" class="app-container">
-        <div class="header">
+        <div id="dashboardHeader" class="header">
             <h1>Teams</h1>
             <span class="back-link" onclick="handleLogout()">Sign Out</span>
         </div>
+
         <div id="teamsList" class="team-grid"></div>
 
-        <div id="managementView" class="management-view">
-            <div class="header">
-                <h2 id="selectedTeamName">Team Management</h2>
-                <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
+        <div id="managementView" class="management-container">
+            <div class="sidebar">
+                <div class="card" style="padding: 24px; text-align: left; max-width: 100%;">
+                    <h3 id="selectedTeamName" style="margin-top: 0;">Team Name</h3>
+                    <p style="font-size: 13px; color: var(--text-grey); margin-bottom: 20px;">Modify members and sync instantly.</p>
+                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%; margin-bottom: 12px;">Apply Changes</button>
+                    <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
+                </div>
             </div>
-            <div id="userList">Loading users...</div>
-            <button id="applyBtn" style="margin-top: 20px;" onclick="applyChanges()">Apply Changes</button>
+
+            <div class="main-content">
+                <div class="search-container">
+                    <input type="text" id="userSearch" placeholder="Search for a user by name or email..." onkeyup="filterUsers()">
+                </div>
+                <div id="userList">Loading directory...</div>
+            </div>
         </div>
     </div>
 
@@ -77,6 +99,7 @@
         const baseUrl = "https://api.aircall.io/v1/";
         let currentTeamId = null;
         let originalMembers = new Set();
+        let allUsersData = [];
 
         function getHeaders() {
             return { 'Authorization': 'Basic ' + btoa(sessionStorage.getItem('ac_id') + ':' + sessionStorage.getItem('ac_token')) };
@@ -104,7 +127,7 @@
             data.teams.forEach(team => {
                 const div = document.createElement('div');
                 div.className = 'team-card';
-                div.innerHTML = `<h3>${team.name}</h3><p>${team.users.length} members</p>`;
+                div.innerHTML = `<h3>${team.name}</h3><p style="color:var(--text-grey)">${team.users.length} members</p>`;
                 div.onclick = () => openTeam(team.id, team.name);
                 list.appendChild(div);
             });
@@ -113,32 +136,50 @@
         async function openTeam(id, name) {
             currentTeamId = id;
             document.getElementById('teamsList').style.display = 'none';
-            document.getElementById('managementView').style.display = 'block';
+            document.getElementById('dashboardHeader').style.display = 'none';
+            document.getElementById('managementView').style.display = 'flex';
             document.getElementById('selectedTeamName').innerText = name;
             
-            // Fetch all users and current team details
             const [usersRes, teamRes] = await Promise.all([
                 fetch(`${baseUrl}users`, { headers: getHeaders() }),
                 fetch(`${baseUrl}teams/${id}`, { headers: getHeaders() })
             ]);
             
-            const allUsers = (await usersRes.json()).users;
+            allUsersData = (await usersRes.json()).users;
             const teamData = (await teamRes.json()).team;
             originalMembers = new Set(teamData.users.map(u => u.id));
 
+            renderUserList();
+        }
+
+        function renderUserList() {
             const list = document.getElementById('userList');
-            list.innerHTML = allUsers.map(user => `
-                <div class="user-item">
-                    <input type="checkbox" data-id="${user.id}" ${originalMembers.has(user.id) ? 'checked' : ''}>
-                    <div><strong>${user.name}</strong><br><small>${user.email}</small></div>
-                </div>
-            `).join('');
+            list.innerHTML = allUsersData.map(user => {
+                const isMember = originalMembers.has(user.id);
+                const statusClass = user.availability_status === 'available' ? 'available' : 'unavailable';
+                return `
+                    <div class="user-item" data-search="${user.name.toLowerCase()} ${user.email.toLowerCase()}">
+                        <input type="checkbox" data-id="${user.id}" ${isMember ? 'checked' : ''}>
+                        <div style="flex: 1;">
+                            <strong>${user.name}</strong> <span class="status-pill ${statusClass}">${user.availability_status}</span><br>
+                            <small style="color: var(--text-grey)">${user.email}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterUsers() {
+            const term = document.getElementById('userSearch').value.toLowerCase();
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.style.display = item.dataset.search.includes(term) ? 'flex' : 'none';
+            });
         }
 
         async function applyChanges() {
             const btn = document.getElementById('applyBtn');
             btn.disabled = true;
-            btn.innerText = "Processing...";
+            btn.innerText = "Syncing...";
 
             const checkboxes = document.querySelectorAll('#userList input');
             for (const cb of checkboxes) {
@@ -153,12 +194,13 @@
                 }
             }
 
-            alert("Changes applied successfully!");
+            alert("Team sync complete!");
             closeManagement();
         }
 
         function closeManagement() {
             document.getElementById('managementView').style.display = 'none';
+            document.getElementById('dashboardHeader').style.display = 'flex';
             document.getElementById('teamsList').style.display = 'grid';
             loadTeams();
         }

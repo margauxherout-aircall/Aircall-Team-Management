@@ -17,268 +17,154 @@
             --border: #E5E7EB;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        /* Login Screen */
-        .login-wrapper {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 440px;
-            text-align: center;
-        }
-
-        .logo {
-            width: 60px;
-            margin-bottom: 20px;
-        }
-
-        h2 { margin-bottom: 8px; font-weight: 600; }
-        .subtitle { color: var(--text-grey); font-size: 14px; margin-bottom: 30px; }
-
-        .input-group { margin-bottom: 16px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--aircall-green);
-            box-shadow: 0 0 0 3px rgba(0, 189, 130, 0.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--aircall-green);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-
-        button:hover { background: var(--aircall-green-hover); }
-
-        /* Main App Interface */
+        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; }
+        
+        /* Layout Modules */
+        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .app-container { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
         
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+        .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; max-width: 440px; text-align: center; }
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
 
-        .user-pill {
-            background: rgba(0, 189, 130, 0.1);
-            color: var(--aircall-green);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        button { width: 100%; padding: 12px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button:hover { background: var(--aircall-green-hover); }
+        button:disabled { background: var(--border); cursor: not-allowed; }
 
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+        /* Team & User Lists */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .team-card { background: var(--white); padding: 24px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; }
+        .team-card:hover { border-color: var(--aircall-green); }
 
-        .team-card {
-            background: var(--white);
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .team-card:hover {
-            border-color: var(--aircall-green);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
-        }
-
-        .logout-link {
-            color: var(--text-grey);
-            font-size: 13px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .error {
-            color: #E53E3E;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--aircall-green);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .management-view { display: none; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
+        .user-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
+        .user-item input { width: auto; margin-right: 15px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .back-link { color: var(--aircall-green); cursor: pointer; font-size: 14px; font-weight: 500; }
     </style>
 </head>
 <body>
 
     <div id="loginView" class="login-wrapper">
         <div class="card">
-            <svg class="logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="20" fill="#00BD82"/>
-                <path d="M28 22C28 25.3137 25.3137 28 22 28H14L12 30V22C12 18.6863 14.6863 16 18 16H22C25.3137 16 28 18.6863 28 22Z" fill="white"/>
-            </svg>
-            <h2>Team Management</h2>
-            <p class="subtitle">Connect with your Aircall API credentials</p>
-            
-            <div class="input-group">
-                <label>API ID</label>
-                <input type="text" id="apiId" placeholder="Enter your API ID">
-            </div>
-            <div class="input-group">
-                <label>API Token</label>
-                <input type="password" id="apiToken" placeholder="Enter your API Token">
-            </div>
-            
-            <div id="loginError" class="error">Invalid credentials. Please try again.</div>
-            <button onclick="handleLogin()">Login to Dashboard</button>
+            <h2>Connect to Aircall</h2>
+            <div class="input-group"><label>API ID</label><input type="text" id="apiId"></div>
+            <div class="input-group"><label>API Token</label><input type="password" id="apiToken"></div>
+            <button onclick="handleLogin()">Login</button>
         </div>
     </div>
 
     <div id="appView" class="app-container">
-        <div class="nav-bar">
-            <div>
-                <h1 style="font-size: 24px; font-weight: 600;">Teams</h1>
-                <p id="apiDisplay" style="font-size: 13px; color: var(--text-grey);"></p>
-            </div>
-            <div style="text-align: right;">
-                <span class="user-pill">Active Session</span><br>
-                <span class="logout-link" onclick="handleLogout()">Sign out</span>
-            </div>
+        <div class="header">
+            <h1>Teams</h1>
+            <span class="back-link" onclick="handleLogout()">Sign Out</span>
         </div>
-
-        <div id="loading" class="loading-spinner"></div>
         <div id="teamsList" class="team-grid"></div>
+
+        <div id="managementView" class="management-view">
+            <div class="header">
+                <h2 id="selectedTeamName">Team Management</h2>
+                <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
+            </div>
+            <div id="userList">Loading users...</div>
+            <button id="applyBtn" style="margin-top: 20px;" onclick="applyChanges()">Apply Changes</button>
+        </div>
     </div>
 
     <script>
         const baseUrl = "https://api.aircall.io/v1/";
+        let currentTeamId = null;
+        let originalMembers = new Set();
 
-        function handleLogin() {
-            const id = document.getElementById('apiId').value.trim();
-            const token = document.getElementById('apiToken').value.trim();
-            const error = document.getElementById('loginError');
+        function getHeaders() {
+            return { 'Authorization': 'Basic ' + btoa(sessionStorage.getItem('ac_id') + ':' + sessionStorage.getItem('ac_token')) };
+        }
 
-            if (!id || !token) {
-                error.innerText = "Both fields are required.";
-                error.style.display = "block";
-                return;
-            }
-
-            // Test credentials by fetching teams
-            fetch(`${baseUrl}teams`, {
-                headers: { 'Authorization': 'Basic ' + btoa(id + ':' + token) }
-            })
-            .then(res => {
-                if (res.ok) {
-                    sessionStorage.setItem('ac_id', id);
-                    sessionStorage.setItem('ac_token', token);
-                    showDashboard();
-                } else {
-                    throw new Error();
-                }
-            })
-            .catch(() => {
-                error.style.display = "block";
-            });
+        async function handleLogin() {
+            const id = document.getElementById('apiId').value;
+            const token = document.getElementById('apiToken').value;
+            sessionStorage.setItem('ac_id', id);
+            sessionStorage.setItem('ac_token', token);
+            showDashboard();
         }
 
         function showDashboard() {
             document.getElementById('loginView').style.display = 'none';
             document.getElementById('appView').style.display = 'block';
-            document.getElementById('apiDisplay').innerText = `Logged in as: ${sessionStorage.getItem('ac_id')}`;
             loadTeams();
         }
 
         async function loadTeams() {
+            const res = await fetch(`${baseUrl}teams`, { headers: getHeaders() });
+            const data = await res.json();
             const list = document.getElementById('teamsList');
-            const loader = document.getElementById('loading');
-            loader.style.display = 'block';
             list.innerHTML = '';
+            data.teams.forEach(team => {
+                const div = document.createElement('div');
+                div.className = 'team-card';
+                div.innerHTML = `<h3>${team.name}</h3><p>${team.users.length} members</p>`;
+                div.onclick = () => openTeam(team.id, team.name);
+                list.appendChild(div);
+            });
+        }
 
-            try {
-                const id = sessionStorage.getItem('ac_id');
-                const token = sessionStorage.getItem('ac_token');
-                
-                const response = await fetch(`${baseUrl}teams`, {
-                    headers: { 'Authorization': 'Basic ' + btoa(id + ':' + token) }
-                });
-                const data = await response.json();
-                
-                data.teams.forEach(team => {
-                    const card = document.createElement('div');
-                    card.className = 'team-card';
-                    card.innerHTML = `
-                        <h3 style="margin-bottom: 8px;">${team.name}</h3>
-                        <p style="font-size: 13px; color: var(--text-grey);">ID: ${team.id}</p>
-                        <p style="font-size: 13px; color: var(--text-grey); margin-top: 10px;">
-                            <strong>${team.users.length}</strong> members
-                        </p>
-                    `;
-                    list.appendChild(card);
-                });
-            } catch (err) {
-                console.error(err);
-            } finally {
-                loader.style.display = 'none';
+        async function openTeam(id, name) {
+            currentTeamId = id;
+            document.getElementById('teamsList').style.display = 'none';
+            document.getElementById('managementView').style.display = 'block';
+            document.getElementById('selectedTeamName').innerText = name;
+            
+            // Fetch all users and current team details
+            const [usersRes, teamRes] = await Promise.all([
+                fetch(`${baseUrl}users`, { headers: getHeaders() }),
+                fetch(`${baseUrl}teams/${id}`, { headers: getHeaders() })
+            ]);
+            
+            const allUsers = (await usersRes.json()).users;
+            const teamData = (await teamRes.json()).team;
+            originalMembers = new Set(teamData.users.map(u => u.id));
+
+            const list = document.getElementById('userList');
+            list.innerHTML = allUsers.map(user => `
+                <div class="user-item">
+                    <input type="checkbox" data-id="${user.id}" ${originalMembers.has(user.id) ? 'checked' : ''}>
+                    <div><strong>${user.name}</strong><br><small>${user.email}</small></div>
+                </div>
+            `).join('');
+        }
+
+        async function applyChanges() {
+            const btn = document.getElementById('applyBtn');
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            const checkboxes = document.querySelectorAll('#userList input');
+            for (const cb of checkboxes) {
+                const userId = parseInt(cb.dataset.id);
+                const isChecked = cb.checked;
+                const wasMember = originalMembers.has(userId);
+
+                if (isChecked && !wasMember) {
+                    await fetch(`${baseUrl}teams/${currentTeamId}/users/${userId}`, { method: 'POST', headers: getHeaders() });
+                } else if (!isChecked && wasMember) {
+                    await fetch(`${baseUrl}teams/${currentTeamId}/users/${userId}`, { method: 'DELETE', headers: getHeaders() });
+                }
             }
+
+            alert("Changes applied successfully!");
+            closeManagement();
         }
 
-        function handleLogout() {
-            sessionStorage.clear();
-            location.reload();
+        function closeManagement() {
+            document.getElementById('managementView').style.display = 'none';
+            document.getElementById('teamsList').style.display = 'grid';
+            loadTeams();
         }
 
-        // Auto-login if session exists
-        window.onload = () => {
-            if (sessionStorage.getItem('ac_id')) showDashboard();
-        }
+        function handleLogout() { sessionStorage.clear(); location.reload(); }
+        if (sessionStorage.getItem('ac_id')) showDashboard();
     </script>
 </body>
 </html>

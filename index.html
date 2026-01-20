@@ -7,51 +7,27 @@
     <link rel="icon" type="image/png" href="https://aircall.io/favicon-32x32.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --aircall-green: #00BD82;
-            --aircall-green-hover: #00A872;
-            --bg-light: #F7F8FC;
-            --text-dark: #012635;
-            --text-grey: #6B7280;
-            --white: #ffffff;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            --border: #E5E7EB;
-        }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; }
-        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .app-container { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; max-width: 440px; text-align: center; }
-        .input-group { margin-bottom: 16px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
-        button { padding: 12px 24px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        button:hover { background: var(--aircall-green-hover); }
-
-        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        .sync-info { font-size: 12px; color: var(--text-grey); text-align: right; }
-
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .team-card { background: var(--white); padding: 24px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; position: relative; }
-        .team-card:hover { border-color: var(--aircall-green); transform: translateY(-2px); }
-        .team-stats { display: flex; gap: 10px; margin-top: 15px; font-size: 12px; font-weight: 600; }
-
-        .management-container { display: none; gap: 30px; align-items: flex-start; }
-        .sidebar { position: sticky; top: 40px; width: 320px; }
-        .main-content { flex: 1; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
-
-        .status-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
-        .available { background: #E6FFFA; color: #047481; }
-        .unavailable { background: #FFF5F5; color: #C53030; }
-        .back-link { color: var(--aircall-green); cursor: pointer; font-size: 14px; font-weight: 500; text-decoration: none; }
+        /* [Same styles as previous turn] */
+        #gatekeeperView { height: 100vh; display: flex; align-items: center; justify-content: center; background: #012635; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="loginView" class="login-wrapper">
+    <div id="gatekeeperView">
+        <div class="card" style="background: #ffffff; color: #012635;">
+            <h2>Access Restricted</h2>
+            <p style="font-size: 13px; color: #6B7280; margin-bottom: 20px;">Please enter the system password to continue.</p>
+            <div class="input-group">
+                <input type="password" id="sysPassword" placeholder="System Password">
+            </div>
+            <button onclick="checkGatekeeper()" style="width: 100%;">Unlock System</button>
+            <p id="gateError" style="color: red; font-size: 12px; margin-top: 10px; display: none;">Incorrect password.</p>
+        </div>
+    </div>
+
+    <div id="loginView" class="login-wrapper" style="display: none;">
         <div class="card">
-            <img src="https://luna-bucket-production-standard.s3.eu-west-1.amazonaws.com/favicon-32x32.png" style="width: 40px; margin-bottom: 20px;">
+            <img src="https://aircall.io/favicon-32x32.png" style="width: 32px; margin-bottom: 20px;">
             <h2>Team Manager</h2>
             <div class="input-group"><label>API ID</label><input type="text" id="apiId"></div>
             <div class="input-group"><label>API Token</label><input type="password" id="apiToken"></div>
@@ -59,152 +35,36 @@
         </div>
     </div>
 
-    <div id="appView" class="app-container">
-        <div id="dashboardHeader" class="header">
-            <div>
-                <h1>Teams</h1>
-                <input type="text" id="teamSearch" placeholder="Search teams..." onkeyup="filterTeams()" style="width: 250px; margin-top: 10px;">
-            </div>
-            <div class="header-actions">
-                <div class="sync-info">
-                    <span id="lastSyncTime">Syncing...</span><br>
-                    <a href="#" onclick="handleLogout()" style="color:var(--text-grey); text-decoration:none;">Sign Out</a>
-                </div>
-                <button onclick="loadTeams()" style="padding: 8px 16px; font-size: 13px;">Refresh All</button>
-            </div>
-        </div>
-
-        <div id="teamsList" class="team-grid"></div>
-
-        <div id="managementView" class="management-container">
-            <div class="sidebar">
-                <div class="card" style="padding: 24px; text-align: left; max-width: 100%;">
-                    <h3 id="selectedTeamName">Team Name</h3>
-                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%; margin-bottom: 12px;">Apply Changes</button>
-                    <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
-                </div>
-            </div>
-            <div class="main-content">
-                <input type="text" id="userSearch" placeholder="Search users..." onkeyup="filterUsers()" style="margin-bottom: 20px;">
-                <div id="userList">Loading directory...</div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        const baseUrl = "https://api.aircall.io/v1/";
-        let currentTeamId = null;
-        let originalMembers = new Set();
-        let lastSyncDate = null;
+        // Note: For a static site, we simulate the environment variable check.
+        // In a full production app, this would be validated by a backend.
+        const EXPECTED_HASH = "AircallAdmin2024"; // Replace this with your Railway Var or a Hash
 
-        function getHeaders() {
-            return { 'Authorization': 'Basic ' + btoa(sessionStorage.getItem('ac_id') + ':' + sessionStorage.getItem('ac_token')) };
-        }
-
-        function handleLogin() {
-            sessionStorage.setItem('ac_id', document.getElementById('apiId').value);
-            sessionStorage.setItem('ac_token', document.getElementById('apiToken').value);
-            showDashboard();
-        }
-
-        function showDashboard() {
-            document.getElementById('loginView').style.display = 'none';
-            document.getElementById('appView').style.display = 'block';
-            loadTeams();
-            setInterval(updateTimer, 1000);
-        }
-
-        function updateTimer() {
-            if (!lastSyncDate) return;
-            const diff = Math.floor((new Date() - lastSyncDate) / 1000);
-            const m = Math.floor(diff / 60);
-            const s = diff % 60;
-            document.getElementById('lastSyncTime').innerText = `Last check: ${m}m ${s}s ago`;
-        }
-
-        async function loadTeams() {
-            const list = document.getElementById('teamsList');
-            try {
-                const [tRes, uRes] = await Promise.all([
-                    fetch(`${baseUrl}teams`, { headers: getHeaders() }),
-                    fetch(`${baseUrl}users`, { headers: getHeaders() })
-                ]);
-                const teamsData = await tRes.json();
-                const allUsers = (await uRes.json()).users;
-                lastSyncDate = new Date();
-
-                list.innerHTML = teamsData.teams.map(team => {
-                    const members = allUsers.filter(u => team.users.some(tu => tu.id === u.id));
-                    const avail = members.filter(m => m.availability_status === 'available').length;
-                    const unavail = members.length - avail;
-                    return `
-                        <div class="team-card" data-name="${team.name.toLowerCase()}">
-                            <h3 onclick="openTeam('${team.id}', '${team.name}')">${team.name}</h3>
-                            <div class="team-stats">
-                                <span class="status-pill available">${avail} Available</span>
-                                <span class="status-pill unavailable">${unavail} Away</span>
-                            </div>
-                        </div>`;
-                }).join('');
-            } catch (e) { alert("Failed to fetch data. Check credentials."); }
-        }
-
-        function filterTeams() {
-            const val = document.getElementById('teamSearch').value.toLowerCase();
-            document.querySelectorAll('.team-card').forEach(c => c.style.display = c.dataset.name.includes(val) ? 'block' : 'none');
-        }
-
-        async function openTeam(id, name) {
-            currentTeamId = id;
-            document.getElementById('teamsList').style.display = 'none';
-            document.getElementById('dashboardHeader').style.display = 'none';
-            document.getElementById('managementView').style.display = 'flex';
-            document.getElementById('selectedTeamName').innerText = name;
-            
-            const [uRes, tRes] = await Promise.all([
-                fetch(`${baseUrl}users`, { headers: getHeaders() }),
-                fetch(`${baseUrl}teams/${id}`, { headers: getHeaders() })
-            ]);
-            const allUsers = (await uRes.json()).users;
-            originalMembers = new Set((await tRes.json()).team.users.map(u => u.id));
-
-            document.getElementById('userList').innerHTML = allUsers.map(u => `
-                <div class="user-item" data-search="${u.name.toLowerCase()} ${u.email.toLowerCase()}">
-                    <input type="checkbox" data-id="${u.id}" ${originalMembers.has(u.id) ? 'checked' : ''}>
-                    <div style="flex:1;">
-                        <strong>${u.name}</strong> <span class="status-pill ${u.availability_status === 'available' ? 'available' : 'unavailable'}">${u.availability_status}</span><br>
-                        <small style="color:var(--text-grey)">${u.email}</small>
-                    </div>
-                </div>`).join('');
-        }
-
-        function filterUsers() {
-            const val = document.getElementById('userSearch').value.toLowerCase();
-            document.querySelectorAll('.user-item').forEach(i => i.style.display = i.dataset.search.includes(val) ? 'flex' : 'none');
-        }
-
-        async function applyChanges() {
-            const btn = document.getElementById('applyBtn');
-            btn.innerText = "Syncing...";
-            const checkboxes = document.querySelectorAll('#userList input');
-            for (const cb of checkboxes) {
-                const id = parseInt(cb.dataset.id);
-                if (cb.checked && !originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'POST', headers: getHeaders() });
-                else if (!cb.checked && originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'DELETE', headers: getHeaders() });
+        function checkGatekeeper() {
+            const input = document.getElementById('sysPassword').value;
+            // In a static Railway build, you can hardcode this or fetch a config file
+            if (input === EXPECTED_HASH) {
+                document.getElementById('gatekeeperView').style.display = 'none';
+                document.getElementById('loginView').style.display = 'flex';
+                sessionStorage.setItem('gatekeeper_unlocked', 'true');
+            } else {
+                document.getElementById('gateError').style.display = 'block';
             }
-            alert("Team sync complete!");
-            closeManagement();
         }
 
-        function closeManagement() {
-            document.getElementById('managementView').style.display = 'none';
-            document.getElementById('dashboardHeader').style.display = 'flex';
-            document.getElementById('teamsList').style.display = 'grid';
-            loadTeams();
+        // Auto-unlock if session exists
+        window.onload = () => {
+            if (sessionStorage.getItem('gatekeeper_unlocked') === 'true') {
+                document.getElementById('gatekeeperView').style.display = 'none';
+                if (sessionStorage.getItem('ac_id')) {
+                    showDashboard();
+                } else {
+                    document.getElementById('loginView').style.display = 'flex';
+                }
+            }
         }
 
-        function handleLogout() { sessionStorage.clear(); location.reload(); }
-        if (sessionStorage.getItem('ac_id')) showDashboard();
+        /* [Rest of the Aircall logic: loadTeams, openTeam, applyChanges, etc.] */
     </script>
 </body>
 </html>

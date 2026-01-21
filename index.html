@@ -72,8 +72,7 @@
                 <span id="count-offline" style="color: #6B7280;">-</span>
             </div>
             <div class="status-stat">
-                <h4>Do Not Disturb</h4>
-                <span id="count-dnd" style="color: #E53E3E;">-</span>
+                <h4>Busy</h4> <span id="count-dnd" style="color: #E53E3E;">-</span>
             </div>
         </div>
 
@@ -141,8 +140,11 @@
                 const teamsRes = await fetch(`${baseUrl}teams`, { headers: getHeaders() });
                 const teamsData = await teamsRes.json();
                 
+                // Alphabetical Sort
+                const sortedTeams = teamsData.teams.sort((a, b) => a.name.localeCompare(b.name));
+                
                 const list = document.getElementById('teamsList');
-                list.innerHTML = teamsData.teams.map(team => `
+                list.innerHTML = sortedTeams.map(team => `
                     <div class="team-card" onclick="openTeam('${team.id}', '${team.name}')">
                         <h3>${team.name}</h3>
                         <p style="color:var(--text-grey)">${team.users.length} members</p>
@@ -163,14 +165,24 @@
             const allUsers = (await uRes.json()).users;
             originalMembers = new Set((await tRes.json()).team.users.map(u => u.id));
 
-            document.getElementById('userList').innerHTML = allUsers.map(u => `
-                <div class="user-item" data-search="${u.name.toLowerCase()}">
-                    <input type="checkbox" data-id="${u.id}" ${originalMembers.has(u.id) ? 'checked' : ''} style="margin-right:15px;">
-                    <div style="flex:1;">
-                        <strong>${u.name}</strong> 
-                        <span class="status-pill ${u.availability_status}">${u.availability_status}</span>
-                    </div>
-                </div>`).join('');
+            document.getElementById('userList').innerHTML = allUsers.map(u => {
+                // Rename status display
+                let displayStatus = u.availability_status;
+                let statusClass = u.availability_status;
+                if(displayStatus === 'do_not_disturb') {
+                    displayStatus = 'busy';
+                    statusClass = 'dnd';
+                }
+
+                return `
+                    <div class="user-item" data-search="${u.name.toLowerCase()}">
+                        <input type="checkbox" data-id="${u.id}" ${originalMembers.has(u.id) ? 'checked' : ''} style="margin-right:15px;">
+                        <div style="flex:1;">
+                            <strong>${u.name}</strong> 
+                            <span class="status-pill ${statusClass}">${displayStatus}</span>
+                        </div>
+                    </div>`;
+            }).join('');
         }
 
         function filterUsers() {

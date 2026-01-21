@@ -19,21 +19,38 @@
         }
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; }
-        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .app-container { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; text-align: center; }
         
-        /* Availability Bar */
-        .status-dashboard { display: flex; justify-content: space-around; background: var(--white); padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-        .status-stat { text-align: center; }
-        .status-stat h4 { margin: 0; font-size: 12px; text-transform: uppercase; color: var(--text-grey); letter-spacing: 0.5px; }
-        .status-stat span { font-size: 24px; font-weight: 600; display: block; margin-top: 5px; }
+        /* Login UI Correction - Centrage et alignement */
+        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; width: 100%; }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--text-dark); }
+        
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 14px; 
+            box-sizing: border-box; /* Assure que le padding n'élargit pas le champ */
+        }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        button { width: 100%; padding: 12px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        button:hover { background: var(--aircall-green-hover); }
+
+        /* Dashboard & Stats */
+        .app-container { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .status-dashboard { display: flex; justify-content: space-around; background: var(--white); padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .status-stat h4 { margin: 0; font-size: 12px; text-transform: uppercase; color: var(--text-grey); }
+        .status-stat span { font-size: 24px; font-weight: 600; display: block; }
+
+        /* Team Grid */
         .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .team-card { background: var(--white); padding: 20px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
         .team-card:hover { border-color: var(--aircall-green); transform: translateY(-2px); }
 
+        /* Management Layout */
         .management-container { display: none; gap: 30px; }
         .sidebar { position: sticky; top: 20px; width: 300px; }
         .main-content { flex: 1; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
@@ -43,61 +60,54 @@
         .available { color: #00BD82; background: #E6F9F3; }
         .offline { color: #6B7280; background: #F3F4F6; }
         .dnd { color: #E53E3E; background: #FFF5F5; }
-
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
-        button { padding: 12px 24px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        
         .back-link { color: var(--aircall-green); cursor: pointer; font-size: 14px; font-weight: 500; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="loginView" class="login-wrapper">
-        <div class="card" style="max-width: 400px;">
+        <div class="card">
             <img src="https://aircall.io/favicon-32x32.png" style="width: 32px; margin-bottom: 20px;">
             <h2>Team Manager</h2>
-            <input type="text" id="apiId" placeholder="API ID">
-            <input type="password" id="apiToken" placeholder="API Token">
-            <button onclick="handleLogin()" style="width: 100%;">Connect Dashboard</button>
+            <div class="input-group">
+                <label for="apiId">API ID</label>
+                <input type="text" id="apiId" placeholder="Entrez votre API ID">
+            </div>
+            <div class="input-group">
+                <label for="apiToken">API Token</label>
+                <input type="password" id="apiToken" placeholder="Entrez votre API Token">
+            </div>
+            <button onclick="handleLogin()">Se connecter</button>
         </div>
     </div>
 
     <div id="appView" class="app-container">
         <div class="status-dashboard">
-            <div class="status-stat">
-                <h4>Available</h4>
-                <span id="count-available" style="color: #00BD82;">-</span>
-            </div>
-            <div class="status-stat">
-                <h4>Offline</h4>
-                <span id="count-offline" style="color: #6B7280;">-</span>
-            </div>
-            <div class="status-stat">
-                <h4>Busy</h4> <span id="count-dnd" style="color: #E53E3E;">-</span>
-            </div>
+            <div class="status-stat"><h4>Available</h4><span id="count-available" style="color: #00BD82;">-</span></div>
+            <div class="status-stat"><h4>Offline</h4><span id="count-offline" style="color: #6B7280;">-</span></div>
+            <div class="status-stat"><h4>Busy</h4><span id="count-dnd" style="color: #E53E3E;">-</span></div>
         </div>
 
         <div id="dashboardContent">
-            <div class="header">
-                <h1>Teams</h1>
-                <div>
-                    <button onclick="loadData()" style="padding: 8px 16px; font-size: 13px;">Refresh All</button>
-                    <a href="#" onclick="handleLogout()" style="margin-left:15px; font-size:13px; color:var(--text-grey);">Sign Out</a>
-                </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h1>Équipes</h1>
+                <button onclick="loadData()" style="padding: 8px 16px;">Actualiser</button>
             </div>
             <div id="teamsList" class="team-grid"></div>
         </div>
 
         <div id="managementView" class="management-container">
             <div class="sidebar">
-                <div class="card" style="text-align: left;">
-                    <h3 id="selectedTeamName">Team Name</h3>
-                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%;">Apply Changes</button>
-                    <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
+                <div class="card" style="text-align: left; padding: 20px;">
+                    <h3 id="selectedTeamName">Nom de l'équipe</h3>
+                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%;">Enregistrer les modifications</button>
+                    <span class="back-link" onclick="closeManagement()">← Retour aux équipes</span>
                 </div>
             </div>
             <div class="main-content">
-                <input type="text" id="userSearch" placeholder="Filter users..." onkeyup="filterUsers()">
-                <div id="userList">Loading users...</div>
+                <input type="text" id="userSearch" placeholder="Rechercher un utilisateur..." onkeyup="filterUsers()" style="margin-bottom: 20px;">
+                <div id="userList">Chargement...</div>
             </div>
         </div>
     </div>
@@ -125,10 +135,8 @@
 
         async function loadData() {
             try {
-                // 1. Fetch Global Availability
                 const availRes = await fetch(`${baseUrl}users/availabilities`, { headers: getHeaders() });
                 const availData = await availRes.json();
-                
                 let counts = { available: 0, offline: 0, do_not_disturb: 0 };
                 availData.users.forEach(u => counts[u.availability] = (counts[u.availability] || 0) + 1);
                 
@@ -136,20 +144,16 @@
                 document.getElementById('count-offline').innerText = counts.offline;
                 document.getElementById('count-dnd').innerText = counts.do_not_disturb;
 
-                // 2. Fetch Teams
                 const teamsRes = await fetch(`${baseUrl}teams`, { headers: getHeaders() });
                 const teamsData = await teamsRes.json();
-                
-                // Alphabetical Sort
                 const sortedTeams = teamsData.teams.sort((a, b) => a.name.localeCompare(b.name));
                 
-                const list = document.getElementById('teamsList');
-                list.innerHTML = sortedTeams.map(team => `
+                document.getElementById('teamsList').innerHTML = sortedTeams.map(team => `
                     <div class="team-card" onclick="openTeam('${team.id}', '${team.name}')">
                         <h3>${team.name}</h3>
-                        <p style="color:var(--text-grey)">${team.users.length} members</p>
+                        <p style="color:var(--text-grey)">${team.users.length} membres</p>
                     </div>`).join('');
-            } catch (e) { console.error("Sync error", e); }
+            } catch (e) { console.error("Erreur de chargement", e); }
         }
 
         async function openTeam(id, name) {
@@ -165,14 +169,16 @@
             const allUsers = (await uRes.json()).users;
             originalMembers = new Set((await tRes.json()).team.users.map(u => u.id));
 
-            document.getElementById('userList').innerHTML = allUsers.map(u => {
-                // Rename status display
-                let displayStatus = u.availability_status;
-                let statusClass = u.availability_status;
-                if(displayStatus === 'do_not_disturb') {
-                    displayStatus = 'busy';
-                    statusClass = 'dnd';
-                }
+            // Tri : Les membres de l'équipe (cochés) apparaissent en premier
+            const sortedUsers = allUsers.sort((a, b) => {
+                const aIsMember = originalMembers.has(a.id);
+                const bIsMember = originalMembers.has(b.id);
+                return bIsMember - aIsMember; // True (1) avant False (0)
+            });
+
+            document.getElementById('userList').innerHTML = sortedUsers.map(u => {
+                let displayStatus = u.availability_status === 'do_not_disturb' ? 'busy' : u.availability_status;
+                let statusClass = u.availability_status === 'do_not_disturb' ? 'dnd' : u.availability_status;
 
                 return `
                     <div class="user-item" data-search="${u.name.toLowerCase()}">
@@ -192,14 +198,14 @@
 
         async function applyChanges() {
             const btn = document.getElementById('applyBtn');
-            btn.innerText = "Syncing...";
+            btn.innerText = "Synchronisation...";
             const checkboxes = document.querySelectorAll('#userList input');
             for (const cb of checkboxes) {
                 const id = parseInt(cb.dataset.id);
                 if (cb.checked && !originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'POST', headers: getHeaders() });
                 else if (!cb.checked && originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'DELETE', headers: getHeaders() });
             }
-            alert("Team sync complete!");
+            alert("Mise à jour réussie !");
             closeManagement();
         }
 

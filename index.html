@@ -20,37 +20,27 @@
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; }
         
-        /* Login UI Correction - Centrage et alignement */
         .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .card { background: var(--white); padding: 40px; border-radius: 16px; box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center; }
         
         .input-group { margin-bottom: 20px; text-align: left; width: 100%; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--text-dark); }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; }
         
-        input[type="text"], input[type="password"] { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            font-size: 14px; 
-            box-sizing: border-box; /* Assure que le padding n'élargit pas le champ */
+        input[type="text"], input[type="password"], input[type="email"] { 
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box;
         }
 
         button { width: 100%; padding: 12px; background: var(--aircall-green); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--aircall-green-hover); }
 
-        /* Dashboard & Stats */
         .app-container { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
         .status-dashboard { display: flex; justify-content: space-around; background: var(--white); padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
         .status-stat h4 { margin: 0; font-size: 12px; text-transform: uppercase; color: var(--text-grey); }
-        .status-stat span { font-size: 24px; font-weight: 600; display: block; }
 
-        /* Team Grid */
         .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .team-card { background: var(--white); padding: 20px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
         .team-card:hover { border-color: var(--aircall-green); transform: translateY(-2px); }
 
-        /* Management Layout */
         .management-container { display: none; gap: 30px; }
         .sidebar { position: sticky; top: 20px; width: 300px; }
         .main-content { flex: 1; background: var(--white); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); }
@@ -71,14 +61,14 @@
             <img src="https://aircall.io/favicon-32x32.png" style="width: 32px; margin-bottom: 20px;">
             <h2>Team Manager</h2>
             <div class="input-group">
-                <label for="apiId">API ID</label>
-                <input type="text" id="apiId" placeholder="Entrez votre API ID">
+                <label>API ID</label>
+                <input type="text" id="apiId" placeholder="Enter your API ID">
             </div>
             <div class="input-group">
-                <label for="apiToken">API Token</label>
-                <input type="password" id="apiToken" placeholder="Entrez votre API Token">
+                <label>API Token</label>
+                <input type="password" id="apiToken" placeholder="Enter your API Token">
             </div>
-            <button onclick="handleLogin()">Se connecter</button>
+            <button onclick="handleLogin()">Login</button>
         </div>
     </div>
 
@@ -90,9 +80,9 @@
         </div>
 
         <div id="dashboardContent">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h1>Équipes</h1>
-                <button onclick="loadData()" style="padding: 8px 16px;">Actualiser</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h1>Teams</h1>
+                <button onclick="loadData()" style="padding: 10px 20px; width: auto;">Refresh Data</button>
             </div>
             <div id="teamsList" class="team-grid"></div>
         </div>
@@ -100,14 +90,14 @@
         <div id="managementView" class="management-container">
             <div class="sidebar">
                 <div class="card" style="text-align: left; padding: 20px;">
-                    <h3 id="selectedTeamName">Nom de l'équipe</h3>
-                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%;">Enregistrer les modifications</button>
-                    <span class="back-link" onclick="closeManagement()">← Retour aux équipes</span>
+                    <h3 id="selectedTeamName">Team Name</h3>
+                    <button id="applyBtn" onclick="applyChanges()" style="width: 100%;">Apply Changes</button>
+                    <span class="back-link" onclick="closeManagement()">← Back to Teams</span>
                 </div>
             </div>
             <div class="main-content">
-                <input type="text" id="userSearch" placeholder="Rechercher un utilisateur..." onkeyup="filterUsers()" style="margin-bottom: 20px;">
-                <div id="userList">Chargement...</div>
+                <input type="text" id="userSearch" placeholder="Search users in directory..." onkeyup="filterUsers()" style="margin-bottom: 20px;">
+                <div id="userList">Loading...</div>
             </div>
         </div>
     </div>
@@ -133,6 +123,22 @@
             loadData();
         }
 
+        // Logic to fetch ALL users (Pagination fix)
+        async function fetchAllUsers() {
+            let allUsers = [];
+            let page = 1;
+            let hasMore = true;
+            
+            while(hasMore) {
+                const res = await fetch(`${baseUrl}users?per_page=50&page=${page}`, { headers: getHeaders() });
+                const data = await res.json();
+                allUsers = allUsers.concat(data.users);
+                hasMore = data.meta.next_page_link !== null;
+                page++;
+            }
+            return allUsers;
+        }
+
         async function loadData() {
             try {
                 const availRes = await fetch(`${baseUrl}users/availabilities`, { headers: getHeaders() });
@@ -151,9 +157,9 @@
                 document.getElementById('teamsList').innerHTML = sortedTeams.map(team => `
                     <div class="team-card" onclick="openTeam('${team.id}', '${team.name}')">
                         <h3>${team.name}</h3>
-                        <p style="color:var(--text-grey)">${team.users.length} membres</p>
+                        <p style="color:var(--text-grey)">${team.users.length} members</p>
                     </div>`).join('');
-            } catch (e) { console.error("Erreur de chargement", e); }
+            } catch (e) { alert("Session expired or invalid API keys."); handleLogout(); }
         }
 
         async function openTeam(id, name) {
@@ -162,24 +168,18 @@
             document.getElementById('managementView').style.display = 'flex';
             document.getElementById('selectedTeamName').innerText = name;
             
-            const [uRes, tRes] = await Promise.all([
-                fetch(`${baseUrl}users`, { headers: getHeaders() }),
+            const [allUsers, tRes] = await Promise.all([
+                fetchAllUsers(), // Fix: Paginated call
                 fetch(`${baseUrl}teams/${id}`, { headers: getHeaders() })
             ]);
-            const allUsers = (await uRes.json()).users;
+            
             originalMembers = new Set((await tRes.json()).team.users.map(u => u.id));
 
-            // Tri : Les membres de l'équipe (cochés) apparaissent en premier
-            const sortedUsers = allUsers.sort((a, b) => {
-                const aIsMember = originalMembers.has(a.id);
-                const bIsMember = originalMembers.has(b.id);
-                return bIsMember - aIsMember; // True (1) avant False (0)
-            });
+            const sortedUsers = allUsers.sort((a, b) => originalMembers.has(b.id) - originalMembers.has(a.id));
 
             document.getElementById('userList').innerHTML = sortedUsers.map(u => {
                 let displayStatus = u.availability_status === 'do_not_disturb' ? 'busy' : u.availability_status;
                 let statusClass = u.availability_status === 'do_not_disturb' ? 'dnd' : u.availability_status;
-
                 return `
                     <div class="user-item" data-search="${u.name.toLowerCase()}">
                         <input type="checkbox" data-id="${u.id}" ${originalMembers.has(u.id) ? 'checked' : ''} style="margin-right:15px;">
@@ -198,14 +198,14 @@
 
         async function applyChanges() {
             const btn = document.getElementById('applyBtn');
-            btn.innerText = "Synchronisation...";
+            btn.innerText = "Syncing...";
             const checkboxes = document.querySelectorAll('#userList input');
             for (const cb of checkboxes) {
                 const id = parseInt(cb.dataset.id);
                 if (cb.checked && !originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'POST', headers: getHeaders() });
                 else if (!cb.checked && originalMembers.has(id)) await fetch(`${baseUrl}teams/${currentTeamId}/users/${id}`, { method: 'DELETE', headers: getHeaders() });
             }
-            alert("Mise à jour réussie !");
+            alert("Team successfully updated!");
             closeManagement();
         }
 

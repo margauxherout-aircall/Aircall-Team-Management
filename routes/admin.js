@@ -18,18 +18,7 @@ router.get('/config', (req, res) => {
   });
 });
 
-// POST /api/admin/config
-router.post('/config', (req, res) => {
-  const { apiId, apiToken, defaultLang } = req.body;
-  if (!apiId) return res.status(400).json({ error: 'API ID required' });
-  const existing = getConfig() || {};
-  const newToken = (apiToken && apiToken !== '__keep__') ? apiToken : existing.apiToken;
-  if (!newToken) return res.status(400).json({ error: 'API Token required' });
-  saveConfig({ ...existing, apiId, apiToken: newToken, defaultLang: defaultLang || existing.defaultLang || 'en' });
-  res.json({ ok: true });
-});
-
-// POST /api/admin/config/test — test Aircall connection
+// POST /api/admin/config/test — test connection (admin only, for edit flow)
 router.post('/config/test', async (req, res) => {
   const { apiId, apiToken } = req.body;
   if (!apiId || !apiToken) return res.status(400).json({ error: 'API ID and Token required' });
@@ -45,6 +34,18 @@ router.post('/config/test', async (req, res) => {
     res.status(502).json({ error: 'Could not reach Aircall. Check your connection.' });
   }
 });
+
+// POST /api/admin/config
+router.post('/config', (req, res) => {
+  const { apiId, apiToken, defaultLang } = req.body;
+  if (!apiId) return res.status(400).json({ error: 'API ID required' });
+  const existing = getConfig() || {};
+  const newToken = (apiToken && apiToken !== '__keep__') ? apiToken : existing.apiToken;
+  if (!newToken) return res.status(400).json({ error: 'API Token required' });
+  saveConfig({ ...existing, apiId, apiToken: newToken, defaultLang: defaultLang || existing.defaultLang || 'en' });
+  res.json({ ok: true });
+});
+
 
 // GET /api/admin/users
 router.get('/users', (req, res) => {

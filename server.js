@@ -27,6 +27,23 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/aircall', require('./routes/aircall'));
 
+// Setup-only route: test Aircall connection (no auth required — used from setup page)
+app.post('/api/setup/test', async (req, res) => {
+  const { apiId, apiToken } = req.body;
+  if (!apiId || !apiToken) return res.status(400).json({ error: 'API ID and Token required' });
+  try {
+    const auth = Buffer.from(`${apiId}:${apiToken}`).toString('base64');
+    const response = await fetch('https://api.aircall.io/v1/company', {
+      headers: { Authorization: `Basic ${auth}` },
+    });
+    if (!response.ok) return res.status(401).json({ error: 'Invalid credentials' });
+    const data = await response.json();
+    res.json({ ok: true, name: data.company?.name || 'Connected' });
+  } catch {
+    res.status(502).json({ error: 'Could not reach Aircall. Check your connection.' });
+  }
+});
+
 // Setup-only route: create the first admin user (no auth required, only works once)
 app.post('/api/setup/admin', async (req, res) => {
   const { isConfigured, getUsers, upsertUser } = require('./lib/data');

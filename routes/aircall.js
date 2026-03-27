@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireLogin, requireSetup } = require('../middleware/auth');
-const { filterTeams, canEdit } = require('../middleware/permissions');
+const { filterTeams, canEdit, managedUserIds } = require('../middleware/permissions');
 const { getConfig } = require('../lib/data');
 
 const router = express.Router();
@@ -83,7 +83,8 @@ router.get('/teams/:id', async (req, res) => {
     }
     const team = await aircallFetch(`/teams/${req.params.id}`);
     const editable = canEdit(req.session.user, req.params.id);
-    res.json({ ...team, editable });
+    const managed = managedUserIds(req.session.user); // 'all' or [id,...]
+    res.json({ ...team, editable, managedUsers: managed });
   } catch (e) {
     res.status(e.status || 502).json({ error: 'Could not load team.' });
   }
@@ -92,6 +93,8 @@ router.get('/teams/:id', async (req, res) => {
 // POST /api/aircall/teams/:teamId/users/:userId
 router.post('/teams/:teamId/users/:userId', async (req, res) => {
   if (!canEdit(req.session.user, req.params.teamId)) return res.status(403).json({ error: 'Access denied' });
+  const managed = managedUserIds(req.session.user);
+  if (managed !== 'all' && !managed.includes(req.params.userId)) return res.status(403).json({ error: 'Access denied' });
   try {
     await aircallFetch(`/teams/${req.params.teamId}/users/${req.params.userId}`, { method: 'POST' });
     res.json({ ok: true });
@@ -103,6 +106,8 @@ router.post('/teams/:teamId/users/:userId', async (req, res) => {
 // DELETE /api/aircall/teams/:teamId/users/:userId
 router.delete('/teams/:teamId/users/:userId', async (req, res) => {
   if (!canEdit(req.session.user, req.params.teamId)) return res.status(403).json({ error: 'Access denied' });
+  const managed = managedUserIds(req.session.user);
+  if (managed !== 'all' && !managed.includes(req.params.userId)) return res.status(403).json({ error: 'Access denied' });
   try {
     await aircallFetch(`/teams/${req.params.teamId}/users/${req.params.userId}`, { method: 'DELETE' });
     res.json({ ok: true });

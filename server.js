@@ -1,18 +1,21 @@
 require('dotenv').config({ quiet: true });
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const path = require('path');
 const { isConfigured } = require('./lib/data');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'change-me-in-production';
+const DATA_DIR = process.env.DATA_PATH || path.join(__dirname, 'data');
 
 app.set('trust proxy', 1); // Railway terminates SSL at the proxy
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
+  store: new FileStore({ path: path.join(DATA_DIR, 'sessions'), retries: 1, logFn: () => {} }),
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,

@@ -23,6 +23,7 @@ router.post('/login', async (req, res) => {
     level: user.level,
     scope: user.scope,
     scopeTeams: user.scopeTeams || [],
+    managedUsers: user.managedUsers ?? 'all',
     aircallUserId: user.aircallUserId || null,
     lang: user.lang || getConfig()?.defaultLang || 'en',
   };

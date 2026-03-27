@@ -149,12 +149,13 @@
             </div>
             <div class="form-group">
               <label class="form-label" data-i18n="admin_user_role">Role</label>
-              <select id="userRole">
+              <select id="userRole" onchange="onRoleChange()">
                 <option value="user" data-i18n="admin_role_user">User</option>
+                <option value="manager" data-i18n="admin_role_manager">Manager</option>
                 <option value="admin" data-i18n="admin_role_admin">Admin</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="levelWrap">
               <label class="form-label" data-i18n="admin_user_level">Access</label>
               <select id="userLevel">
                 <option value="view" data-i18n="admin_level_view">View only</option>
@@ -162,7 +163,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" data-i18n="admin_user_scope">Scope</label>
+              <label class="form-label" data-i18n="admin_user_scope">Team scope</label>
               <select id="userScope" onchange="onScopeChange()">
                 <option value="all" data-i18n="admin_scope_all">All teams</option>
                 <option value="own" data-i18n="admin_scope_own">Own teams only</option>
@@ -173,6 +174,16 @@
               <label class="form-label" data-i18n="admin_user_scope_teams">Teams</label>
               <div class="teams-checklist" id="teamsChecklist">
                 <span style="color:var(--text-muted); font-size:13px;">Loading teams…</span>
+              </div>
+            </div>
+            <div class="form-group full" id="managedUsersWrap" style="display:none;">
+              <label class="form-label" data-i18n="admin_managed_users">Users this manager can manage</label>
+              <select id="managedUsersScope" onchange="onManagedUsersScopeChange()" style="margin-bottom:8px;">
+                <option value="all" data-i18n="admin_managed_users_all">All users in their teams</option>
+                <option value="specific" data-i18n="admin_managed_users_specific">Specific users</option>
+              </select>
+              <div class="teams-checklist" id="managedUsersChecklist" style="display:none;">
+                <span style="color:var(--text-muted); font-size:13px;">Loading users…</span>
               </div>
             </div>
           </div>
@@ -208,6 +219,7 @@
 <script src="/js/i18n.js"></script>
 <script>
 let allTeams = [];
+let allUsers = [];
 let editingUserId = null;
 
 (async () => {
@@ -219,6 +231,7 @@ let editingUserId = null;
   loadApiStatus();
   loadUsers();
   loadTeams();
+  loadAllUsers();
 })();
 
 function renderLangSelector() {
@@ -326,7 +339,7 @@ async function loadUsers() {
         <div class="user-name">${escHtml(u.name)}</div>
         <div class="user-email">${escHtml(u.email)}</div>
       </td>
-      <td><span class="badge ${u.level === 'edit' ? 'badge-green' : 'badge-grey'}">${I18n.t('admin_level_' + u.level)}</span></td>
+      <td><span class="badge ${u.role === 'admin' ? 'badge-amber' : u.role === 'manager' ? 'badge-green' : u.level === 'edit' ? 'badge-green' : 'badge-grey'}">${I18n.t('admin_role_' + u.role) + (u.role === 'user' ? ' · ' + I18n.t('admin_level_' + u.level) : '')}</span></td>
       <td style="font-size:13px; color:var(--text-sub);">${scopeLabel(u)}</td>
       <td>
         <div class="user-actions">
@@ -357,6 +370,13 @@ async function loadTeams() {
   } catch { allTeams = []; }
 }
 
+async function loadAllUsers() {
+  try {
+    const data = await fetch('/api/aircall/users').then(r => r.json());
+    allUsers = data.users || [];
+  } catch { allUsers = []; }
+}
+
 function openUserForm(user) {
   editingUserId = user ? user.id : null;
   document.getElementById('userId').value = user ? user.id : '';
@@ -368,7 +388,13 @@ function openUserForm(user) {
   document.getElementById('userScope').value = user ? user.scope : 'all';
   document.getElementById('userFormError').style.display = 'none';
   renderTeamsChecklist(user ? (user.scopeTeams || []) : []);
+  // Managed users
+  const mu = user ? user.managedUsers : 'all';
+  const muScope = (mu === 'all' || !mu) ? 'all' : 'specific';
+  document.getElementById('managedUsersScope').value = muScope;
+  renderManagedUsersChecklist(muScope === 'specific' ? (mu || []) : []);
   onScopeChange();
+  onRoleChange();
   document.getElementById('userForm').classList.add('open');
   document.getElementById('userName').focus();
 }
@@ -384,9 +410,46 @@ async function editUser(id) {
   if (user) openUserForm(user);
 }
 
+function onRoleChange() {
+  const role = document.getElementById('userRole').value;
+  const isAdmin = role === 'admin';
+  const isManager = role === 'manager';
+  document.getElementById('levelWrap').style.display = (isAdmin || isManager) ? 'none' : 'block';
+  document.getElementById('userScope').closest('.form-group').style.display = isAdmin ? 'none' : 'block';
+  document.getElementById('managedUsersWrap').style.display = isManager ? 'block' : 'none';
+  if (isAdmin) {
+    document.getElementById('scopeTeamsWrap').style.display = 'none';
+  } else {
+    onScopeChange();
+  }
+}
+
 function onScopeChange() {
   const scope = document.getElementById('userScope').value;
   document.getElementById('scopeTeamsWrap').style.display = scope === 'specific' ? 'block' : 'none';
+}
+
+function onManagedUsersScopeChange() {
+  const val = document.getElementById('managedUsersScope').value;
+  renderManagedUsersChecklist(val === 'specific' ? [] : []);
+}
+
+function renderManagedUsersChecklist(selected) {
+  const wrap = document.getElementById('managedUsersChecklist');
+  const muScopeVal = document.getElementById('managedUsersScope').value;
+  if (muScopeVal !== 'specific') { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  if (!allUsers.length) {
+    wrap.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Loading users…</span>`;
+    return;
+  }
+  const selectedSet = new Set(selected.map(String));
+  const sorted = [...allUsers].sort((a, b) => a.name.localeCompare(b.name));
+  wrap.innerHTML = sorted.map(u => `
+    <label>
+      <input type="checkbox" value="${u.id}" ${selectedSet.has(String(u.id)) ? 'checked' : ''}>
+      ${escHtml(u.name)}
+    </label>`).join('');
 }
 
 function renderTeamsChecklist(selected) {
@@ -432,6 +495,18 @@ async function saveUser() {
   btn.disabled = true;
   const body = { name, email, role, level, scope, scopeTeams };
   if (password) body.password = password;
+
+  // Managed users (manager role only)
+  if (role === 'manager') {
+    const muScope = document.getElementById('managedUsersScope').value;
+    if (muScope === 'all') {
+      body.managedUsers = 'all';
+    } else {
+      body.managedUsers = [...document.querySelectorAll('#managedUsersChecklist input:checked')].map(cb => cb.value);
+    }
+  } else {
+    body.managedUsers = 'all';
+  }
 
   const url = id ? `/api/admin/users/${id}` : '/api/admin/users';
   const method = id ? 'PUT' : 'POST';

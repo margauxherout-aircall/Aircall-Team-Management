@@ -57,6 +57,7 @@ router.get('/users', (req, res) => {
     level: u.level,
     scope: u.scope,
     scopeTeams: u.scopeTeams || [],
+    managedUsers: u.managedUsers ?? 'all',
     lang: u.lang || 'en',
   }));
   res.json(users);
@@ -64,7 +65,7 @@ router.get('/users', (req, res) => {
 
 // POST /api/admin/users — create
 router.post('/users', async (req, res) => {
-  const { name, email, password, role, level, scope, scopeTeams, lang } = req.body;
+  const { name, email, password, role, level, scope, scopeTeams, managedUsers, lang } = req.body;
   if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password required' });
 
   const existing = getUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -80,6 +81,7 @@ router.post('/users', async (req, res) => {
     level: level || 'view',
     scope: scope || 'all',
     scopeTeams: scopeTeams || [],
+    managedUsers: managedUsers ?? 'all',
     lang: lang || 'en',
   };
   upsertUser(user);
@@ -92,7 +94,7 @@ router.put('/users/:id', async (req, res) => {
   const user = users.find(u => u.id === req.params.id);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  const { name, email, password, role, level, scope, scopeTeams, lang } = req.body;
+  const { name, email, password, role, level, scope, scopeTeams, managedUsers, lang } = req.body;
   if (name) user.name = name;
   if (email) user.email = email.toLowerCase();
   if (password) user.passwordHash = await bcrypt.hash(password, 10);
@@ -100,6 +102,7 @@ router.put('/users/:id', async (req, res) => {
   if (level) user.level = level;
   if (scope) user.scope = scope;
   if (scopeTeams !== undefined) user.scopeTeams = scopeTeams;
+  if (managedUsers !== undefined) user.managedUsers = managedUsers;
   if (lang) user.lang = lang;
 
   upsertUser(user);

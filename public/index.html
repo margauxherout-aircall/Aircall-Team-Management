@@ -247,6 +247,7 @@ async function openTeam(id, name) {
 
     isEditable = teamData.editable === true;
     originalMembers = new Set((teamData.team?.users || []).map(u => u.id));
+    const managedUsers = teamData.managedUsers; // 'all' or [id,...]
 
     // Update sidebar: show/hide apply button
     document.getElementById('applyBtn').style.display = isEditable ? 'block' : 'none';
@@ -261,7 +262,9 @@ async function openTeam(id, name) {
       const status = u.availability_status === 'do_not_disturb' ? 'busy' : (u.availability_status || 'offline');
       const pillClass = status === 'available' ? 'pill-available' : status === 'busy' ? 'pill-busy' : 'pill-offline';
 
-      if (!isEditable) {
+      const canToggle = isEditable && (managedUsers === 'all' || (Array.isArray(managedUsers) && managedUsers.map(String).includes(String(u.id))));
+
+      if (!canToggle) {
         return `
           <div class="user-item view-only" data-search="${u.name.toLowerCase()}">
             <span class="member-dot ${isMember ? 'is-member' : 'not-member'}"></span>

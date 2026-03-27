@@ -27,6 +27,17 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/aircall', require('./routes/aircall'));
 
+// Setup-only route: save API config (no auth required, only works before first user exists)
+app.post('/api/setup/config', (req, res) => {
+  const { getUsers, saveConfig, getConfig } = require('./lib/data');
+  if (getUsers().length > 0) return res.status(400).json({ error: 'Setup already complete' });
+  const { apiId, apiToken, defaultLang } = req.body;
+  if (!apiId || !apiToken) return res.status(400).json({ error: 'API ID and Token required' });
+  const existing = getConfig() || {};
+  saveConfig({ ...existing, apiId, apiToken, defaultLang: defaultLang || 'en' });
+  res.json({ ok: true });
+});
+
 // Setup-only route: test Aircall connection (no auth required — used from setup page)
 app.post('/api/setup/test', async (req, res) => {
   const { apiId, apiToken } = req.body;

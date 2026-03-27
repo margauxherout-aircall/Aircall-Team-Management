@@ -165,7 +165,7 @@
 
       try {
         // 1. Save API config
-        await fetch('/api/admin/config', {
+        await fetch('/api/setup/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ apiId: testedApiId, apiToken: testedApiToken, defaultLang: I18n.getLang() }),

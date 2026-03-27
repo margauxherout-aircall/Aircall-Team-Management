@@ -40,6 +40,9 @@
   "dashboard_offline": "Sin conexión",
   "dashboard_busy": "Ocupado",
   "dashboard_members": "{n} miembros",
+  "dashboard_sort_name": "Nombre A–Z",
+  "dashboard_sort_members_desc": "Más miembros",
+  "dashboard_sort_members_asc": "Menos miembros",
   "dashboard_loading": "Cargando equipos…",
   "dashboard_error": "No se pudieron cargar los equipos. Por favor, actualice.",
 

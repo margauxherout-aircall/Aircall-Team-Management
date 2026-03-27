@@ -40,6 +40,9 @@
   "dashboard_offline": "Hors ligne",
   "dashboard_busy": "Occupé",
   "dashboard_members": "{n} membres",
+  "dashboard_sort_name": "Nom A–Z",
+  "dashboard_sort_members_desc": "Plus de membres",
+  "dashboard_sort_members_asc": "Moins de membres",
   "dashboard_loading": "Chargement des équipes…",
   "dashboard_error": "Impossible de charger les équipes. Veuillez actualiser.",
 

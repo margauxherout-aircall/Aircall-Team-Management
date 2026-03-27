@@ -40,6 +40,9 @@
   "dashboard_offline": "Offline",
   "dashboard_busy": "Beschäftigt",
   "dashboard_members": "{n} Mitglieder",
+  "dashboard_sort_name": "Name A–Z",
+  "dashboard_sort_members_desc": "Meiste Mitglieder",
+  "dashboard_sort_members_asc": "Wenigste Mitglieder",
   "dashboard_loading": "Teams werden geladen…",
   "dashboard_error": "Teams konnten nicht geladen werden. Bitte aktualisieren.",
 

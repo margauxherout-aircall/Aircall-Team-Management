@@ -109,8 +109,13 @@
         <div class="dash-header">
           <h2 data-i18n="dashboard_title">Teams</h2>
           <div class="search-input-wrap">
-            <input type="text" id="teamSearch" onkeyup="filterTeamsList()" data-i18n-placeholder="dashboard_search" placeholder="Search teams…">
+            <input type="text" id="teamSearch" onkeyup="applyTeamsFilter()" data-i18n-placeholder="dashboard_search" placeholder="Search teams…">
           </div>
+          <select id="teamSort" onchange="applyTeamsFilter()" style="height:36px; padding:0 10px; font-size:13px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); cursor:pointer;">
+            <option value="name" data-i18n="dashboard_sort_name">Name A–Z</option>
+            <option value="members_desc" data-i18n="dashboard_sort_members_desc">Most members</option>
+            <option value="members_asc" data-i18n="dashboard_sort_members_asc">Fewest members</option>
+          </select>
           <button class="btn btn-ghost btn-sm" onclick="loadData()" data-i18n="dashboard_refresh">Refresh</button>
         </div>
 
@@ -226,9 +231,17 @@ function renderTeamsList(teams) {
     </div>`).join('');
 }
 
-function filterTeamsList() {
+function applyTeamsFilter() {
   const val = document.getElementById('teamSearch').value.toLowerCase();
-  const filtered = teamsData.filter(t => t.name.toLowerCase().includes(val));
+  const sort = document.getElementById('teamSort').value;
+  let filtered = teamsData.filter(t => t.name.toLowerCase().includes(val));
+  if (sort === 'name') {
+    filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sort === 'members_desc') {
+    filtered = [...filtered].sort((a, b) => (b.users?.length ?? 0) - (a.users?.length ?? 0));
+  } else if (sort === 'members_asc') {
+    filtered = [...filtered].sort((a, b) => (a.users?.length ?? 0) - (b.users?.length ?? 0));
+  }
   renderTeamsList(filtered);
 }
 

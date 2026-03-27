@@ -40,6 +40,9 @@
   "dashboard_offline": "Offline",
   "dashboard_busy": "Busy",
   "dashboard_members": "{n} members",
+  "dashboard_sort_name": "Name A–Z",
+  "dashboard_sort_members_desc": "Most members",
+  "dashboard_sort_members_asc": "Fewest members",
   "dashboard_loading": "Loading teams…",
   "dashboard_error": "Couldn't load teams. Please refresh.",
 

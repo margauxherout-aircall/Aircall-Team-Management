@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Manager</title>
+  <link rel="icon" type="image/png" href="https://aircall.io/favicon-32x32.png">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* Status bar */
+    .status-bar {
+      display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .status-stat {
+      flex: 1; min-width: 100px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      box-shadow: var(--shadow);
+    }
+    .status-stat .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; }
+    .status-stat .stat-value { font-size: 28px; font-weight: 600; line-height: 1; }
+    .stat-available { color: var(--green); }
+    .stat-offline   { color: var(--text-sub); }
+    .stat-busy      { color: var(--error); }
+
+    /* Team grid */
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .team-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow);
+    }
+    .team-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,179,136,0.12); }
+    .team-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .team-card p  { font-size: 13px; color: var(--text-sub); }
+
+    /* Dashboard header */
+    .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .dash-header h2 { font-size: 20px; font-weight: 600; }
+
+    /* Team management view */
+    #teamView { display: none; }
+    .team-view-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .team-view-header h2 { font-size: 20px; font-weight: 600; flex: 1; }
+
+    .team-layout { display: flex; gap: 20px; align-items: flex-start; }
+    .team-sidebar-card { width: 220px; flex-shrink: 0; }
+    .team-sidebar-card .btn { width: 100%; margin-bottom: 8px; }
+    .back-link {
+      display: block; margin-top: 10px; font-size: 13px; color: var(--text-sub);
+      cursor: pointer; text-decoration: none;
+    }
+    .back-link:hover { color: var(--green); }
+    .team-main-card { flex: 1; }
+
+    /* User list */
+    .search-wrap { margin-bottom: 16px; }
+    .user-list { display: flex; flex-direction: column; }
+    .user-item {
+      display: flex; align-items: center; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .user-item:last-child { border-bottom: none; }
+    .user-item label { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; }
+    .user-name-col { flex: 1; }
+    .user-name-col strong { display: block; font-size: 14px; }
+
+    /* View-only mode: replace checkboxes with read-only indicator */
+    .user-item.view-only label { cursor: default; }
+    .member-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .member-dot.is-member { background: var(--green); }
+    .member-dot.not-member { background: var(--border); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://aircall.io/favicon-32x32.png" alt="Aircall">
+      <span data-i18n="app_name">Team Manager</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/" class="active" data-i18n="nav_dashboard">Teams</a>
+      <span id="adminNavWrap" style="display:none;">
+        <a href="/admin" data-i18n="nav_admin">Admin</a>
+      </span>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <strong id="sidebarUserName">—</strong>
+        <span id="sidebarUserEmail"></span>
+      </div>
+      <div class="lang-selector" id="langSelector"></div>
+      <button class="sidebar-logout" onclick="logout()" data-i18n="nav_logout">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="main-inner">
+
+      <!-- Dashboard view -->
+      <div id="dashView">
+        <div class="status-bar">
+          <div class="status-stat">
+            <div class="stat-label" data-i18n="dashboard_available">Available</div>
+            <div class="stat-value stat-available" id="countAvailable">—</div>
+          </div>
+          <div class="status-stat">
+            <div class="stat-label" data-i18n="dashboard_offline">Offline</div>
+            <div class="stat-value stat-offline" id="countOffline">—</div>
+          </div>
+          <div class="status-stat">
+            <div class="stat-label" data-i18n="dashboard_busy">Busy</div>
+            <div class="stat-value stat-busy" id="countBusy">—</div>
+          </div>
+        </div>
+
+        <div class="dash-header">
+          <h2 data-i18n="dashboard_title">Teams</h2>
+          <button class="btn btn-ghost btn-sm" onclick="loadData()" data-i18n="dashboard_refresh">Refresh</button>
+        </div>
+
+        <div id="dashError" class="alert alert-error" style="display:none; margin-bottom:16px;"></div>
+        <div id="teamGrid" class="team-grid"></div>
+      </div>
+
+      <!-- Team management view -->
+      <div id="teamView">
+        <div class="team-view-header">
+          <h2 id="teamName">—</h2>
+          <span id="viewOnlyBadge" class="badge badge-grey" style="display:none;" data-i18n="team_view_only">View only</span>
+        </div>
+
+        <div class="team-layout">
+          <!-- Sidebar actions -->
+          <div class="team-sidebar-card card" id="teamActions">
+            <button class="btn btn-primary" id="applyBtn" onclick="applyChanges()" data-i18n="team_apply">Apply changes</button>
+            <a class="back-link" onclick="closeDashboard()" data-i18n="team_back">← Back to Teams</a>
+          </div>
+
+          <!-- User list -->
+          <div class="team-main-card card" style="flex:1;">
+            <div class="search-wrap">
+              <input type="text" id="userSearch" onkeyup="filterUsers()"
+                data-i18n-placeholder="team_search_placeholder" placeholder="Search users…">
+            </div>
+            <div id="teamError" class="alert alert-error" style="display:none; margin-bottom:16px;"></div>
+            <div id="userList" class="user-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/js/i18n.js"></script>
+<script>
+let currentTeamId = null;
+let originalMembers = new Set();
+let isEditable = false;
+
+(async () => {
+  await I18n.load();
+  const me = await fetch('/api/auth/me').then(r => r.json());
+  document.getElementById('sidebarUserName').textContent = me.name || me.email;
+  document.getElementById('sidebarUserEmail').textContent = me.email;
+  if (me.role === 'admin') document.getElementById('adminNavWrap').style.display = 'block';
+  renderLangSelector();
+  loadData();
+})();
+
+function renderLangSelector() {
+  const el = document.getElementById('langSelector');
+  el.innerHTML = I18n.supported.map(l =>
+    `<button class="lang-btn ${l === I18n.getLang() ? 'active' : ''}" onclick="switchLang('${l}')">${l.toUpperCase()}</button>`
+  ).join('');
+}
+
+async function switchLang(l) {
+  await I18n.setLang(l);
+  renderLangSelector();
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = '/login';
+}
+
+async function loadData() {
+  const grid = document.getElementById('teamGrid');
+  const errEl = document.getElementById('dashError');
+  errEl.style.display = 'none';
+  grid.innerHTML = `<p style="color:var(--text-muted);" data-i18n="dashboard_loading">${I18n.t('dashboard_loading')}</p>`;
+
+  try {
+    const [availRes, teamsRes] = await Promise.all([
+      fetch('/api/aircall/availabilities'),
+      fetch('/api/aircall/teams'),
+    ]);
+
+    if (availRes.ok) {
+      const avail = await availRes.json();
+      const counts = { available: 0, offline: 0, do_not_disturb: 0 };
+      (avail.users || []).forEach(u => counts[u.availability] = (counts[u.availability] || 0) + 1);
+      document.getElementById('countAvailable').textContent = counts.available;
+      document.getElementById('countOffline').textContent = counts.offline;
+      document.getElementById('countBusy').textContent = counts.do_not_disturb;
+    }
+
+    const teams = await teamsRes.json();
+    if (!teamsRes.ok) throw new Error(teams.error);
+
+    grid.innerHTML = (teams.teams || []).map(t => `
+      <div class="team-card" onclick="openTeam('${t.id}', ${JSON.stringify(t.name).replace(/'/g, '&#39;')})">
+        <h3>${escHtml(t.name)}</h3>
+        <p>${I18n.t('dashboard_members', { n: t.users ? t.users.length : 0 })}</p>
+      </div>`).join('') || `<p style="color:var(--text-muted);">—</p>`;
+
+  } catch (e) {
+    grid.innerHTML = '';
+    errEl.textContent = I18n.t('dashboard_error');
+    errEl.style.display = 'block';
+  }
+}
+
+async function openTeam(id, name) {
+  currentTeamId = id;
+  document.getElementById('dashView').style.display = 'none';
+  document.getElementById('teamView').style.display = 'block';
+  document.getElementById('teamName').textContent = name;
+  document.getElementById('userList').innerHTML = `<p style="color:var(--text-muted);">${I18n.t('team_loading')}</p>`;
+  document.getElementById('teamError').style.display = 'none';
+
+  try {
+    const [usersRes, teamRes] = await Promise.all([
+      fetch('/api/aircall/users'),
+      fetch(`/api/aircall/teams/${id}`),
+    ]);
+
+    const { users: allUsers } = await usersRes.json();
+    const teamData = await teamRes.json();
+
+    isEditable = teamData.editable === true;
+    originalMembers = new Set((teamData.team?.users || []).map(u => u.id));
+
+    // Update sidebar: show/hide apply button
+    document.getElementById('applyBtn').style.display = isEditable ? 'block' : 'none';
+    document.getElementById('viewOnlyBadge').style.display = isEditable ? 'none' : 'flex';
+
+    const sorted = [...allUsers].sort((a, b) =>
+      originalMembers.has(b.id) - originalMembers.has(a.id) || a.name.localeCompare(b.name)
+    );
+
+    document.getElementById('userList').innerHTML = sorted.map(u => {
+      const isMember = originalMembers.has(u.id);
+      const status = u.availability_status === 'do_not_disturb' ? 'busy' : (u.availability_status || 'offline');
+      const pillClass = status === 'available' ? 'pill-available' : status === 'busy' ? 'pill-busy' : 'pill-offline';
+
+      if (!isEditable) {
+        return `
+          <div class="user-item view-only" data-search="${u.name.toLowerCase()}">
+            <span class="member-dot ${isMember ? 'is-member' : 'not-member'}"></span>
+            <div class="user-name-col" style="margin-left:12px;">
+              <strong>${escHtml(u.name)}</strong>
+            </div>
+            <span class="pill ${pillClass}">${I18n.t('status_' + status)}</span>
+          </div>`;
+      }
+
+      return `
+        <div class="user-item" data-search="${u.name.toLowerCase()}">
+          <label>
+            <input type="checkbox" data-id="${u.id}" ${isMember ? 'checked' : ''}>
+            <div class="user-name-col">
+              <strong>${escHtml(u.name)}</strong>
+            </div>
+          </label>
+          <span class="pill ${pillClass}">${I18n.t('status_' + status)}</span>
+        </div>`;
+    }).join('');
+
+  } catch {
+    document.getElementById('teamError').textContent = I18n.t('team_error');
+    document.getElementById('teamError').style.display = 'block';
+    document.getElementById('userList').innerHTML = '';
+  }
+}
+
+function filterUsers() {
+  const val = document.getElementById('userSearch').value.toLowerCase();
+  document.querySelectorAll('#userList .user-item').forEach(el => {
+    el.style.display = el.dataset.search.includes(val) ? 'flex' : 'none';
+  });
+}
+
+async function applyChanges() {
+  if (!isEditable) return;
+  const btn = document.getElementById('applyBtn');
+  btn.disabled = true;
+  btn.textContent = I18n.t('team_applying');
+
+  const checkboxes = document.querySelectorAll('#userList input[type=checkbox]');
+  const errors = [];
+
+  for (const cb of checkboxes) {
+    const uid = parseInt(cb.dataset.id);
+    try {
+      if (cb.checked && !originalMembers.has(uid)) {
+        const res = await fetch(`/api/aircall/teams/${currentTeamId}/users/${uid}`, { method: 'POST' });
+        if (!res.ok) errors.push(uid);
+      } else if (!cb.checked && originalMembers.has(uid)) {
+        const res = await fetch(`/api/aircall/teams/${currentTeamId}/users/${uid}`, { method: 'DELETE' });
+        if (!res.ok) errors.push(uid);
+      }
+    } catch { errors.push(uid); }
+  }
+
+  btn.disabled = false;
+  btn.textContent = I18n.t('team_apply');
+
+  if (!errors.length) {
+    closeDashboard();
+  } else {
+    const errEl = document.getElementById('teamError');
+    errEl.textContent = I18n.t('team_error');
+    errEl.style.display = 'block';
+  }
+}
+
+function closeDashboard() {
+  document.getElementById('teamView').style.display = 'none';
+  document.getElementById('dashView').style.display = 'block';
+  currentTeamId = null;
+  loadData();
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

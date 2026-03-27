@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Manager — Setup</title>
+  <link rel="icon" type="image/png" href="https://aircall.io/favicon-32x32.png">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .setup-header { text-align: center; margin-bottom: 28px; }
+    .setup-header img { width: 36px; margin-bottom: 14px; }
+    .setup-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .setup-header p  { color: var(--text-sub); font-size: 14px; }
+    .step-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 16px;
+    }
+    .form-stack { display: flex; flex-direction: column; gap: 16px; }
+    .connection-result {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500; margin-top: 4px;
+    }
+    .connection-result.ok { background: var(--green-light); color: var(--green-hover); }
+    .connection-result.fail { background: var(--error-light); color: #B91C1C; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    #step2 { display: none; }
+  </style>
+</head>
+<body>
+  <div class="page-centered">
+    <div style="width:100%; max-width:460px;">
+      <div class="card">
+        <div class="setup-header">
+          <img src="https://aircall.io/favicon-32x32.png" alt="Aircall">
+          <h1 data-i18n="setup_title">Welcome to Team Manager</h1>
+          <p data-i18n="setup_subtitle">Let's connect your Aircall account to get started.</p>
+        </div>
+
+        <!-- Step 1: API credentials -->
+        <div id="step1">
+          <p class="step-label">1 — <span data-i18n="setup_step1">Aircall API credentials</span></p>
+          <div class="form-stack">
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_api_id">API ID</label>
+              <input type="text" id="apiId" autocomplete="off">
+              <span class="form-hint" data-i18n="setup_api_id_help">
+                Found in your Aircall Dashboard under Integrations → API keys.
+              </span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_api_token">API Token</label>
+              <input type="password" id="apiToken" autocomplete="off">
+            </div>
+
+            <div id="connResult" style="display:none;"></div>
+
+            <button class="btn btn-secondary btn-full" id="testBtn" onclick="testConnection()">
+              <span data-i18n="setup_test_btn">Test connection</span>
+            </button>
+          </div>
+        </div>
+
+        <hr class="divider" id="stepDivider" style="display:none;">
+
+        <!-- Step 2: Admin account -->
+        <div id="step2">
+          <p class="step-label">2 — <span data-i18n="setup_step2">Admin account</span></p>
+          <div class="form-stack">
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_admin_name">Your name</label>
+              <input type="text" id="adminName" data-i18n-placeholder="setup_placeholder_name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_admin_email">Email</label>
+              <input type="email" id="adminEmail" data-i18n-placeholder="setup_placeholder_email">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_admin_password">Password</label>
+              <input type="password" id="adminPassword" data-i18n-placeholder="setup_placeholder_password">
+            </div>
+
+            <div id="saveError" class="alert alert-error" style="display:none;"></div>
+
+            <button class="btn btn-primary btn-full" id="saveBtn" onclick="saveSetup()">
+              <span data-i18n="setup_save_btn">Save and continue</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/i18n.js"></script>
+  <script>
+    I18n.load();
+
+    let testedApiId = null;
+    let testedApiToken = null;
+
+    async function testConnection() {
+      const apiId = document.getElementById('apiId').value.trim();
+      const apiToken = document.getElementById('apiToken').value.trim();
+      if (!apiId || !apiToken) return;
+
+      const btn = document.getElementById('testBtn');
+      const result = document.getElementById('connResult');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner spinner-green"></span> <span data-i18n="setup_testing">${I18n.t('setup_testing')}</span>`;
+      result.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin/config/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiId, apiToken }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          testedApiId = apiId;
+          testedApiToken = apiToken;
+          result.className = 'connection-result ok';
+          result.innerHTML = `<span class="dot"></span> ${I18n.t('setup_connected', { name: data.name })}`;
+          result.style.display = 'flex';
+          // Reveal step 2
+          document.getElementById('stepDivider').style.display = 'block';
+          document.getElementById('step2').style.display = 'block';
+        } else {
+          result.className = 'connection-result fail';
+          result.innerHTML = `<span class="dot"></span> ${I18n.t('setup_error_invalid')}`;
+          result.style.display = 'flex';
+        }
+      } catch {
+        result.className = 'connection-result fail';
+        result.innerHTML = `<span class="dot"></span> ${I18n.t('setup_error_generic')}`;
+        result.style.display = 'flex';
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<span data-i18n="setup_test_btn">${I18n.t('setup_test_btn')}</span>`;
+    }
+
+    async function saveSetup() {
+      const name = document.getElementById('adminName').value.trim();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errEl = document.getElementById('saveError');
+      errEl.style.display = 'none';
+
+      if (!name || !email || !password) {
+        errEl.textContent = I18n.t('admin_error_generic');
+        errEl.style.display = 'block';
+        return;
+      }
+      if (!testedApiId) {
+        errEl.textContent = I18n.t('setup_error_invalid');
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> <span>${I18n.t('setup_saving')}</span>`;
+
+      try {
+        // 1. Save API config
+        await fetch('/api/admin/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiId: testedApiId, apiToken: testedApiToken, defaultLang: I18n.getLang() }),
+        });
+
+        // 2. Create admin user (bypass admin middleware — server handles first user specially)
+        const res = await fetch('/api/setup/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        if (!res.ok) throw new Error();
+
+        // 3. Auto-login
+        await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        window.location.href = '/admin';
+      } catch {
+        errEl.textContent = I18n.t('admin_error_generic');
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = `<span data-i18n="setup_save_btn">${I18n.t('setup_save_btn')}</span>`;
+      }
+    }
+  </script>
+</body>
+</html>

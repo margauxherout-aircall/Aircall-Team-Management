@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Manager — Admin</title>
+  <link rel="icon" type="image/png" href="https://aircall.io/favicon-32x32.png">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title { font-size: 16px; font-weight: 600; }
+
+    /* API config card */
+    .api-status-row { display: flex; align-items: center; gap: 10px; }
+    .api-form { display: none; flex-direction: column; gap: 14px; margin-top: 16px; }
+    .api-form.open { display: flex; }
+    .api-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* User table */
+    .user-table { width: 100%; border-collapse: collapse; }
+    .user-table th {
+      text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-muted); padding: 0 12px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .user-table td { padding: 14px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .user-table tr:last-child td { border-bottom: none; }
+    .user-name { font-weight: 500; }
+    .user-email { font-size: 13px; color: var(--text-sub); }
+    .user-actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+    /* User form drawer */
+    .user-form-card {
+      margin-top: 16px; padding: 20px;
+      border: 1px solid var(--green); border-radius: var(--radius);
+      background: var(--green-light); display: none;
+    }
+    .user-form-card.open { display: block; }
+    .user-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .user-form-grid .full { grid-column: 1 / -1; }
+    .user-form-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+    /* Scope teams selector */
+    #scopeTeamsWrap { display: none; }
+    .teams-checklist {
+      max-height: 160px; overflow-y: auto;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); padding: 8px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .teams-checklist label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; padding: 4px 6px; border-radius: 4px; cursor: pointer;
+    }
+    .teams-checklist label:hover { background: var(--surface); }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      padding: 12px 18px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500; z-index: 999;
+      transition: opacity 0.3s; pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://aircall.io/favicon-32x32.png" alt="Aircall">
+      <span data-i18n="app_name">Team Manager</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/" data-i18n="nav_dashboard">Teams</a>
+      <a href="/admin" class="active" data-i18n="nav_admin">Admin</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <strong id="sidebarUserName">—</strong>
+        <span id="sidebarUserEmail"></span>
+      </div>
+      <div class="lang-selector" id="langSelector"></div>
+      <button class="sidebar-logout" onclick="logout()" data-i18n="nav_logout">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="main-inner">
+      <h1 style="font-size:22px; font-weight:600; margin-bottom:32px;" data-i18n="admin_title">Admin</h1>
+
+      <!-- API Config -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="section-header">
+          <span class="section-title" data-i18n="admin_api_section">Aircall connection</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span id="apiStatusBadge"></span>
+            <button class="btn btn-ghost btn-sm" onclick="toggleApiForm()" id="apiEditBtn" data-i18n="admin_api_edit">Edit</button>
+          </div>
+        </div>
+
+        <div class="api-form" id="apiForm">
+          <div class="api-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_api_id">API ID</label>
+              <input type="text" id="cfgApiId" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="setup_api_token">API Token</label>
+              <input type="password" id="cfgApiToken" autocomplete="off" placeholder="Leave blank to keep current">
+            </div>
+          </div>
+          <div id="apiTestResult" style="display:none;"></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="testApiConfig()" id="apiTestBtn" data-i18n="setup_test_btn">Test connection</button>
+            <button class="btn btn-primary btn-sm" onclick="saveApiConfig()" id="apiSaveBtn" data-i18n="admin_api_save">Save</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleApiForm()" data-i18n="admin_api_cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title" data-i18n="admin_users_section">Users</span>
+          <button class="btn btn-primary btn-sm" onclick="openUserForm()" data-i18n="admin_users_add">+ Add user</button>
+        </div>
+
+        <!-- Add/Edit user form -->
+        <div class="user-form-card" id="userForm">
+          <div class="user-form-grid">
+            <input type="hidden" id="userId">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_name">Name</label>
+              <input type="text" id="userName" data-i18n-placeholder="admin_placeholder_name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_email">Email</label>
+              <input type="email" id="userEmail" data-i18n-placeholder="admin_placeholder_email">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_password">Password</label>
+              <input type="password" id="userPassword" data-i18n-placeholder="admin_placeholder_password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_role">Role</label>
+              <select id="userRole">
+                <option value="user" data-i18n="admin_role_user">User</option>
+                <option value="admin" data-i18n="admin_role_admin">Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_level">Access</label>
+              <select id="userLevel">
+                <option value="view" data-i18n="admin_level_view">View only</option>
+                <option value="edit" data-i18n="admin_level_edit">View &amp; edit</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin_user_scope">Scope</label>
+              <select id="userScope" onchange="onScopeChange()">
+                <option value="all" data-i18n="admin_scope_all">All teams</option>
+                <option value="own" data-i18n="admin_scope_own">Own teams only</option>
+                <option value="specific" data-i18n="admin_scope_specific">Specific teams</option>
+              </select>
+            </div>
+            <div class="form-group full" id="scopeTeamsWrap">
+              <label class="form-label" data-i18n="admin_user_scope_teams">Teams</label>
+              <div class="teams-checklist" id="teamsChecklist">
+                <span style="color:var(--text-muted); font-size:13px;">Loading teams…</span>
+              </div>
+            </div>
+          </div>
+          <div id="userFormError" class="alert alert-error" style="display:none; margin-top:12px;"></div>
+          <div class="user-form-actions">
+            <button class="btn btn-primary btn-sm" onclick="saveUser()" id="userSaveBtn" data-i18n="admin_user_save">Save</button>
+            <button class="btn btn-ghost btn-sm" onclick="closeUserForm()" data-i18n="admin_user_cancel">Cancel</button>
+          </div>
+        </div>
+
+        <!-- User table -->
+        <div id="usersTableWrap" style="margin-top:16px;">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th data-i18n="admin_user_name">Name</th>
+                <th data-i18n="admin_user_level">Access</th>
+                <th data-i18n="admin_user_scope">Scope</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast" style="display:none;"></div>
+
+<script src="/js/i18n.js"></script>
+<script>
+let allTeams = [];
+let editingUserId = null;
+
+(async () => {
+  await I18n.load();
+  const me = await fetch('/api/auth/me').then(r => r.json());
+  document.getElementById('sidebarUserName').textContent = me.name || me.email;
+  document.getElementById('sidebarUserEmail').textContent = me.email;
+  renderLangSelector();
+  loadApiStatus();
+  loadUsers();
+  loadTeams();
+})();
+
+function renderLangSelector() {
+  const el = document.getElementById('langSelector');
+  el.innerHTML = I18n.supported.map(l =>
+    `<button class="lang-btn ${l === I18n.getLang() ? 'active' : ''}" onclick="switchLang('${l}')">${l.toUpperCase()}</button>`
+  ).join('');
+}
+
+async function switchLang(l) {
+  await I18n.setLang(l);
+  renderLangSelector();
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = '/login';
+}
+
+// ── API Config ────────────────────────────────────────────
+async function loadApiStatus() {
+  const data = await fetch('/api/admin/config').then(r => r.json());
+  const badge = document.getElementById('apiStatusBadge');
+  if (data.apiTokenSet) {
+    badge.innerHTML = `<span class="badge badge-green">● ${I18n.t('admin_api_status_ok')}</span>`;
+    document.getElementById('cfgApiId').value = data.apiId || '';
+  } else {
+    badge.innerHTML = `<span class="badge badge-grey">${I18n.t('admin_api_status_none')}</span>`;
+  }
+}
+
+function toggleApiForm() {
+  document.getElementById('apiForm').classList.toggle('open');
+}
+
+async function testApiConfig() {
+  const apiId = document.getElementById('cfgApiId').value.trim();
+  const apiToken = document.getElementById('cfgApiToken').value.trim();
+  if (!apiId || !apiToken) return;
+  const btn = document.getElementById('apiTestBtn');
+  const result = document.getElementById('apiTestResult');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner spinner-green"></span>`;
+  result.style.display = 'none';
+
+  const res = await fetch('/api/admin/config/test', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiId, apiToken }),
+  });
+  const data = await res.json();
+  result.className = res.ok ? 'alert alert-success' : 'alert alert-error';
+  result.textContent = res.ok
+    ? I18n.t('setup_connected', { name: data.name })
+    : I18n.t('setup_error_invalid');
+  result.style.display = 'block';
+  btn.disabled = false;
+  btn.innerHTML = I18n.t('setup_test_btn');
+}
+
+async function saveApiConfig() {
+  const apiId = document.getElementById('cfgApiId').value.trim();
+  const apiToken = document.getElementById('cfgApiToken').value.trim();
+  if (!apiId) return;
+  const existing = await fetch('/api/admin/config').then(r => r.json());
+  const body = { apiId, apiToken: apiToken || undefined };
+  if (!apiToken && existing.apiTokenSet) {
+    // Keep existing token — re-fetch from server (can't re-send it as we don't expose it)
+    // Just send apiId only; server merges
+    body.apiToken = '__keep__';
+  }
+  // Actually send both; server only updates what's provided
+  const payload = { apiId, defaultLang: I18n.getLang() };
+  if (apiToken) payload.apiToken = apiToken;
+  else payload.apiToken = '__keep__'; // signal to keep existing
+
+  // Simpler: just require token if changing
+  if (!apiToken && !existing.apiTokenSet) {
+    showToast(I18n.t('setup_error_invalid'), 'error');
+    return;
+  }
+  const res = await fetch('/api/admin/config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(apiToken ? { apiId, apiToken, defaultLang: I18n.getLang() } : { apiId, defaultLang: I18n.getLang() }),
+  });
+  if (res.ok) {
+    showToast(I18n.t('admin_saved'));
+    toggleApiForm();
+    loadApiStatus();
+  }
+}
+
+// ── Users ─────────────────────────────────────────────────
+async function loadUsers() {
+  const users = await fetch('/api/admin/users').then(r => r.json());
+  const tbody = document.getElementById('usersTableBody');
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-muted); text-align:center; padding:24px;">${I18n.t('dashboard_loading')}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>
+        <div class="user-name">${escHtml(u.name)}</div>
+        <div class="user-email">${escHtml(u.email)}</div>
+      </td>
+      <td><span class="badge ${u.level === 'edit' ? 'badge-green' : 'badge-grey'}">${I18n.t('admin_level_' + u.level)}</span></td>
+      <td style="font-size:13px; color:var(--text-sub);">${scopeLabel(u)}</td>
+      <td>
+        <div class="user-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editUser('${u.id}')" data-i18n="admin_api_edit">${I18n.t('admin_api_edit')}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}', '${escHtml(u.name)}')" data-i18n="admin_user_delete">${I18n.t('admin_user_delete')}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function scopeLabel(u) {
+  if (u.scope === 'all') return I18n.t('admin_scope_all');
+  if (u.scope === 'own') return I18n.t('admin_scope_own');
+  if (u.scope === 'specific') {
+    const names = (u.scopeTeams || []).map(id => {
+      const t = allTeams.find(t => String(t.id) === String(id));
+      return t ? t.name : id;
+    });
+    return names.join(', ') || I18n.t('admin_scope_specific');
+  }
+  return u.scope;
+}
+
+async function loadTeams() {
+  try {
+    const data = await fetch('/api/aircall/teams').then(r => r.json());
+    allTeams = data.teams || [];
+  } catch { allTeams = []; }
+}
+
+function openUserForm(user) {
+  editingUserId = user ? user.id : null;
+  document.getElementById('userId').value = user ? user.id : '';
+  document.getElementById('userName').value = user ? user.name : '';
+  document.getElementById('userEmail').value = user ? user.email : '';
+  document.getElementById('userPassword').value = '';
+  document.getElementById('userRole').value = user ? user.role : 'user';
+  document.getElementById('userLevel').value = user ? user.level : 'view';
+  document.getElementById('userScope').value = user ? user.scope : 'all';
+  document.getElementById('userFormError').style.display = 'none';
+  renderTeamsChecklist(user ? (user.scopeTeams || []) : []);
+  onScopeChange();
+  document.getElementById('userForm').classList.add('open');
+  document.getElementById('userName').focus();
+}
+
+function closeUserForm() {
+  document.getElementById('userForm').classList.remove('open');
+  editingUserId = null;
+}
+
+async function editUser(id) {
+  const users = await fetch('/api/admin/users').then(r => r.json());
+  const user = users.find(u => u.id === id);
+  if (user) openUserForm(user);
+}
+
+function onScopeChange() {
+  const scope = document.getElementById('userScope').value;
+  document.getElementById('scopeTeamsWrap').style.display = scope === 'specific' ? 'block' : 'none';
+}
+
+function renderTeamsChecklist(selected) {
+  const el = document.getElementById('teamsChecklist');
+  if (!allTeams.length) {
+    el.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Loading teams…</span>`;
+    return;
+  }
+  el.innerHTML = allTeams.map(t => `
+    <label>
+      <input type="checkbox" value="${t.id}" ${selected.includes(String(t.id)) ? 'checked' : ''}>
+      ${escHtml(t.name)}
+    </label>`).join('');
+}
+
+async function saveUser() {
+  const id = document.getElementById('userId').value;
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('userEmail').value.trim();
+  const password = document.getElementById('userPassword').value;
+  const role = document.getElementById('userRole').value;
+  const level = document.getElementById('userLevel').value;
+  const scope = document.getElementById('userScope').value;
+  const scopeTeams = scope === 'specific'
+    ? [...document.querySelectorAll('#teamsChecklist input:checked')].map(cb => cb.value)
+    : [];
+
+  const errEl = document.getElementById('userFormError');
+  errEl.style.display = 'none';
+
+  if (!name || !email) {
+    errEl.textContent = I18n.t('admin_error_generic');
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!id && !password) {
+    errEl.textContent = I18n.t('admin_placeholder_password');
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('userSaveBtn');
+  btn.disabled = true;
+  const body = { name, email, role, level, scope, scopeTeams };
+  if (password) body.password = password;
+
+  const url = id ? `/api/admin/users/${id}` : '/api/admin/users';
+  const method = id ? 'PUT' : 'POST';
+
+  const res = await fetch(url, {
+    method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    errEl.textContent = data.error || I18n.t('admin_error_generic');
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    return;
+  }
+  closeUserForm();
+  loadUsers();
+  showToast(I18n.t('admin_saved'));
+  btn.disabled = false;
+}
+
+async function deleteUser(id, name) {
+  if (!confirm(I18n.t('admin_user_delete_confirm', { name }))) return;
+  const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+  if (res.ok) { loadUsers(); showToast(I18n.t('admin_saved')); }
+  else showToast(I18n.t('admin_error_generic'), 'error');
+}
+
+// ── Utilities ─────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type === 'error' ? 'var(--error)' : 'var(--green)';
+  t.style.color = '#fff';
+  t.style.display = 'block';
+  t.style.opacity = '1';
+  setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => { t.style.display = 'none'; }, 300);
+  }, 3000);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

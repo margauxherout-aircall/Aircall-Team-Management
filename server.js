@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'change-me-in-production';
 
+app.set('trust proxy', 1); // Railway terminates SSL at the proxy
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

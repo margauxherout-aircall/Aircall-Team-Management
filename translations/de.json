@@ -7,7 +7,6 @@
   "login_submit": "Anmelden",
   "login_error_invalid": "Ungültige E-Mail-Adresse oder Passwort.",
   "login_error_generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
-  "login_placeholder_email": "sie@unternehmen.com",
   "login_placeholder_password": "Ihr Passwort",
 
   "setup_title": "Willkommen beim Team Manager",
@@ -28,7 +27,6 @@
   "setup_save_btn": "Speichern und fortfahren",
   "setup_saving": "Speichere…",
   "setup_placeholder_name": "Max Mustermann",
-  "setup_placeholder_email": "admin@unternehmen.com",
   "setup_placeholder_password": "Sicheres Passwort wählen",
 
   "nav_dashboard": "Teams",
@@ -88,7 +86,6 @@
   "admin_error_generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
   "admin_saved": "Gespeichert.",
   "admin_placeholder_name": "Max Mustermann",
-  "admin_placeholder_email": "max@unternehmen.com",
   "admin_placeholder_password": "Passwort festlegen",
 
   "lang_en": "English",

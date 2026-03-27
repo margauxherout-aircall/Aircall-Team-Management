@@ -7,7 +7,6 @@
   "login_submit": "Sign in",
   "login_error_invalid": "Invalid email or password.",
   "login_error_generic": "Something went wrong. Please try again.",
-  "login_placeholder_email": "you@company.com",
   "login_placeholder_password": "Your password",
 
   "setup_title": "Welcome to Team Manager",
@@ -28,7 +27,6 @@
   "setup_save_btn": "Save and continue",
   "setup_saving": "Saving…",
   "setup_placeholder_name": "Jane Smith",
-  "setup_placeholder_email": "admin@company.com",
   "setup_placeholder_password": "Choose a strong password",
 
   "nav_dashboard": "Teams",
@@ -88,7 +86,6 @@
   "admin_error_generic": "Something went wrong. Please try again.",
   "admin_saved": "Saved.",
   "admin_placeholder_name": "Jane Smith",
-  "admin_placeholder_email": "jane@company.com",
   "admin_placeholder_password": "Set a password",
 
   "lang_en": "English",

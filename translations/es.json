@@ -7,7 +7,6 @@
   "login_submit": "Iniciar sesión",
   "login_error_invalid": "Correo electrónico o contraseña incorrectos.",
   "login_error_generic": "Algo salió mal. Por favor, inténtelo de nuevo.",
-  "login_placeholder_email": "usted@empresa.com",
   "login_placeholder_password": "Su contraseña",
 
   "setup_title": "Bienvenido a Team Manager",
@@ -28,7 +27,6 @@
   "setup_save_btn": "Guardar y continuar",
   "setup_saving": "Guardando…",
   "setup_placeholder_name": "Ana García",
-  "setup_placeholder_email": "admin@empresa.com",
   "setup_placeholder_password": "Elija una contraseña segura",
 
   "nav_dashboard": "Equipos",
@@ -88,7 +86,6 @@
   "admin_error_generic": "Algo salió mal. Por favor, inténtelo de nuevo.",
   "admin_saved": "Guardado.",
   "admin_placeholder_name": "Ana García",
-  "admin_placeholder_email": "ana@empresa.com",
   "admin_placeholder_password": "Establecer una contraseña",
 
   "lang_en": "English",

@@ -7,7 +7,6 @@
   "login_submit": "Se connecter",
   "login_error_invalid": "Email ou mot de passe incorrect.",
   "login_error_generic": "Une erreur est survenue. Veuillez réessayer.",
-  "login_placeholder_email": "vous@entreprise.com",
   "login_placeholder_password": "Votre mot de passe",
 
   "setup_title": "Bienvenue sur Team Manager",
@@ -28,7 +27,6 @@
   "setup_save_btn": "Enregistrer et continuer",
   "setup_saving": "Enregistrement…",
   "setup_placeholder_name": "Marie Dupont",
-  "setup_placeholder_email": "admin@entreprise.com",
   "setup_placeholder_password": "Choisissez un mot de passe fort",
 
   "nav_dashboard": "Équipes",
@@ -88,7 +86,6 @@
   "admin_error_generic": "Une erreur est survenue. Veuillez réessayer.",
   "admin_saved": "Enregistré.",
   "admin_placeholder_name": "Marie Dupont",
-  "admin_placeholder_email": "marie@entreprise.com",
   "admin_placeholder_password": "Définir un mot de passe",
 
   "lang_en": "English",

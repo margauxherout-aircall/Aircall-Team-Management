@@ -172,6 +172,7 @@
             </div>
             <div class="form-group full" id="scopeTeamsWrap">
               <label class="form-label" data-i18n="admin_user_scope_teams">Teams</label>
+              <input type="text" id="teamsSearch" oninput="filterTeamsChecklist()" data-i18n-placeholder="dashboard_search" placeholder="Search teams…" style="margin-bottom:6px;">
               <div class="teams-checklist" id="teamsChecklist">
                 <span style="color:var(--text-muted); font-size:13px;">Loading teams…</span>
               </div>
@@ -182,6 +183,7 @@
                 <option value="all" data-i18n="admin_managed_users_all">All users in their teams</option>
                 <option value="specific" data-i18n="admin_managed_users_specific">Specific users</option>
               </select>
+              <input type="text" id="managedUsersSearch" oninput="filterManagedUsersChecklist()" data-i18n-placeholder="team_search_placeholder" placeholder="Search users…" style="margin-bottom:6px; display:none;">
               <div class="teams-checklist" id="managedUsersChecklist" style="display:none;">
                 <span style="color:var(--text-muted); font-size:13px;">Loading users…</span>
               </div>
@@ -431,14 +433,18 @@ function onScopeChange() {
 
 function onManagedUsersScopeChange() {
   const val = document.getElementById('managedUsersScope').value;
+  document.getElementById('managedUsersSearch').style.display = val === 'specific' ? 'block' : 'none';
+  document.getElementById('managedUsersSearch').value = '';
   renderManagedUsersChecklist(val === 'specific' ? [] : []);
 }
 
 function renderManagedUsersChecklist(selected) {
   const wrap = document.getElementById('managedUsersChecklist');
+  const searchEl = document.getElementById('managedUsersSearch');
   const muScopeVal = document.getElementById('managedUsersScope').value;
-  if (muScopeVal !== 'specific') { wrap.style.display = 'none'; return; }
+  if (muScopeVal !== 'specific') { wrap.style.display = 'none'; searchEl.style.display = 'none'; return; }
   wrap.style.display = 'block';
+  searchEl.style.display = 'block';
   if (!allUsers.length) {
     wrap.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Loading users…</span>`;
     return;
@@ -446,23 +452,38 @@ function renderManagedUsersChecklist(selected) {
   const selectedSet = new Set(selected.map(String));
   const sorted = [...allUsers].sort((a, b) => a.name.localeCompare(b.name));
   wrap.innerHTML = sorted.map(u => `
-    <label>
+    <label data-search="${u.name.toLowerCase()}">
       <input type="checkbox" value="${u.id}" ${selectedSet.has(String(u.id)) ? 'checked' : ''}>
       ${escHtml(u.name)}
     </label>`).join('');
 }
 
+function filterManagedUsersChecklist() {
+  const val = document.getElementById('managedUsersSearch').value.toLowerCase();
+  document.querySelectorAll('#managedUsersChecklist label').forEach(el => {
+    el.style.display = el.dataset.search.includes(val) ? '' : 'none';
+  });
+}
+
 function renderTeamsChecklist(selected) {
   const el = document.getElementById('teamsChecklist');
+  document.getElementById('teamsSearch').value = '';
   if (!allTeams.length) {
     el.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Loading teams…</span>`;
     return;
   }
   el.innerHTML = allTeams.map(t => `
-    <label>
+    <label data-search="${t.name.toLowerCase()}">
       <input type="checkbox" value="${t.id}" ${selected.includes(String(t.id)) ? 'checked' : ''}>
       ${escHtml(t.name)}
     </label>`).join('');
+}
+
+function filterTeamsChecklist() {
+  const val = document.getElementById('teamsSearch').value.toLowerCase();
+  document.querySelectorAll('#teamsChecklist label').forEach(el => {
+    el.style.display = el.dataset.search.includes(val) ? '' : 'none';
+  });
 }
 
 async function saveUser() {

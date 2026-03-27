@@ -8,14 +8,11 @@
   <link rel="stylesheet" href="/style.css">
   <style>
     /* Status bar */
-    .status-bar {
-      display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
-    }
+    .status-bar { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
     .status-stat {
       flex: 1; min-width: 100px;
       background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px 20px;
-      box-shadow: var(--shadow);
+      border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow);
     }
     .status-stat .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; }
     .status-stat .stat-value { font-size: 28px; font-weight: 600; line-height: 1; }
@@ -23,50 +20,42 @@
     .stat-offline   { color: var(--text-sub); }
     .stat-busy      { color: var(--error); }
 
-    /* Team grid */
-    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-    .team-card {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px; cursor: pointer;
-      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
-      box-shadow: var(--shadow);
-    }
-    .team-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,179,136,0.12); }
-    .team-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-    .team-card p  { font-size: 13px; color: var(--text-sub); }
-
     /* Dashboard header */
-    .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .dash-header h2 { font-size: 20px; font-weight: 600; }
+    .dash-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .dash-header h2 { font-size: 20px; font-weight: 600; flex: 1; }
+    .search-input-wrap { flex: 1; min-width: 200px; max-width: 320px; }
+
+    /* Teams list */
+    .teams-list { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .team-row {
+      display: flex; align-items: center; padding: 14px 20px;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+      transition: background 0.12s;
+    }
+    .team-row:last-child { border-bottom: none; }
+    .team-row:hover { background: var(--surface); }
+    .team-row-name { font-weight: 500; font-size: 14px; flex: 1; }
+    .team-row-count { font-size: 13px; color: var(--text-sub); margin-right: 12px; }
+    .team-row-arrow { color: var(--text-muted); font-size: 16px; }
 
     /* Team management view */
     #teamView { display: none; }
     .team-view-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
     .team-view-header h2 { font-size: 20px; font-weight: 600; flex: 1; }
-
     .team-layout { display: flex; gap: 20px; align-items: flex-start; }
-    .team-sidebar-card { width: 220px; flex-shrink: 0; }
+    .team-sidebar-card { width: 200px; flex-shrink: 0; }
     .team-sidebar-card .btn { width: 100%; margin-bottom: 8px; }
-    .back-link {
-      display: block; margin-top: 10px; font-size: 13px; color: var(--text-sub);
-      cursor: pointer; text-decoration: none;
-    }
+    .back-link { display: block; margin-top: 10px; font-size: 13px; color: var(--text-sub); cursor: pointer; }
     .back-link:hover { color: var(--green); }
     .team-main-card { flex: 1; }
 
     /* User list */
-    .search-wrap { margin-bottom: 16px; }
     .user-list { display: flex; flex-direction: column; }
-    .user-item {
-      display: flex; align-items: center; padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .user-item { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); }
     .user-item:last-child { border-bottom: none; }
-    .user-item label { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; }
-    .user-name-col { flex: 1; }
-    .user-name-col strong { display: block; font-size: 14px; }
-
-    /* View-only mode: replace checkboxes with read-only indicator */
+    .user-item label { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; min-width: 0; }
+    .user-name-col { flex: 1; min-width: 0; }
+    .user-name-col strong { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .user-item.view-only label { cursor: default; }
     .member-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .member-dot.is-member { background: var(--green); }
@@ -76,7 +65,6 @@
 <body>
 <div class="app-layout">
 
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <img src="https://aircall.io/favicon-32x32.png" alt="Aircall">
@@ -98,7 +86,6 @@
     </div>
   </aside>
 
-  <!-- Main -->
   <main class="main">
     <div class="main-inner">
 
@@ -121,11 +108,14 @@
 
         <div class="dash-header">
           <h2 data-i18n="dashboard_title">Teams</h2>
+          <div class="search-input-wrap">
+            <input type="text" id="teamSearch" onkeyup="filterTeamsList()" data-i18n-placeholder="dashboard_search" placeholder="Search teams…">
+          </div>
           <button class="btn btn-ghost btn-sm" onclick="loadData()" data-i18n="dashboard_refresh">Refresh</button>
         </div>
 
         <div id="dashError" class="alert alert-error" style="display:none; margin-bottom:16px;"></div>
-        <div id="teamGrid" class="team-grid"></div>
+        <div id="teamsList" class="teams-list"></div>
       </div>
 
       <!-- Team management view -->
@@ -136,17 +126,14 @@
         </div>
 
         <div class="team-layout">
-          <!-- Sidebar actions -->
           <div class="team-sidebar-card card" id="teamActions">
             <button class="btn btn-primary" id="applyBtn" onclick="applyChanges()" data-i18n="team_apply">Apply changes</button>
             <a class="back-link" onclick="closeDashboard()" data-i18n="team_back">← Back to Teams</a>
           </div>
 
-          <!-- User list -->
-          <div class="team-main-card card" style="flex:1;">
-            <div class="search-wrap">
-              <input type="text" id="userSearch" onkeyup="filterUsers()"
-                data-i18n-placeholder="team_search_placeholder" placeholder="Search users…">
+          <div class="team-main-card card">
+            <div style="margin-bottom:16px;">
+              <input type="text" id="userSearch" onkeyup="filterUsers()" data-i18n-placeholder="team_search_placeholder" placeholder="Search users…">
             </div>
             <div id="teamError" class="alert alert-error" style="display:none; margin-bottom:16px;"></div>
             <div id="userList" class="user-list"></div>
@@ -163,13 +150,14 @@
 let currentTeamId = null;
 let originalMembers = new Set();
 let isEditable = false;
+let teamsData = [];
 
 (async () => {
   await I18n.load();
   const me = await fetch('/api/auth/me').then(r => r.json());
   document.getElementById('sidebarUserName').textContent = me.name || me.email;
   document.getElementById('sidebarUserEmail').textContent = me.email;
-  if (me.role === 'admin') document.getElementById('adminNavWrap').style.display = 'block';
+  if (me.role === 'admin' || me.role === 'manager') document.getElementById('adminNavWrap').style.display = 'block';
   renderLangSelector();
   loadData();
 })();
@@ -192,10 +180,10 @@ async function logout() {
 }
 
 async function loadData() {
-  const grid = document.getElementById('teamGrid');
+  const listEl = document.getElementById('teamsList');
   const errEl = document.getElementById('dashError');
   errEl.style.display = 'none';
-  grid.innerHTML = `<p style="color:var(--text-muted);" data-i18n="dashboard_loading">${I18n.t('dashboard_loading')}</p>`;
+  listEl.innerHTML = `<div style="padding:20px; color:var(--text-muted);" data-i18n="dashboard_loading">${I18n.t('dashboard_loading')}</div>`;
 
   try {
     const [availRes, teamsRes] = await Promise.all([
@@ -214,27 +202,46 @@ async function loadData() {
 
     const teams = await teamsRes.json();
     if (!teamsRes.ok) throw new Error(teams.error);
+    teamsData = teams.teams || [];
+    renderTeamsList(teamsData);
 
-    grid.innerHTML = (teams.teams || []).map(t => `
-      <div class="team-card" onclick="openTeam('${t.id}', ${JSON.stringify(t.name).replace(/'/g, '&#39;')})">
-        <h3>${escHtml(t.name)}</h3>
-        <p>${I18n.t('dashboard_members', { n: t.users ? t.users.length : 0 })}</p>
-      </div>`).join('') || `<p style="color:var(--text-muted);">—</p>`;
-
-  } catch (e) {
-    grid.innerHTML = '';
+  } catch {
+    listEl.innerHTML = '';
     errEl.textContent = I18n.t('dashboard_error');
     errEl.style.display = 'block';
   }
 }
 
-async function openTeam(id, name) {
+function renderTeamsList(teams) {
+  const listEl = document.getElementById('teamsList');
+  if (!teams.length) {
+    listEl.innerHTML = `<div style="padding:20px; color:var(--text-muted);">—</div>`;
+    return;
+  }
+  listEl.innerHTML = teams.map(t => `
+    <div class="team-row" data-id="${t.id}" data-name="${escAttr(t.name)}" onclick="openTeam(this)">
+      <span class="team-row-name">${escHtml(t.name)}</span>
+      <span class="team-row-count">${I18n.t('dashboard_members', { n: t.users ? t.users.length : 0 })}</span>
+      <span class="team-row-arrow">›</span>
+    </div>`).join('');
+}
+
+function filterTeamsList() {
+  const val = document.getElementById('teamSearch').value.toLowerCase();
+  const filtered = teamsData.filter(t => t.name.toLowerCase().includes(val));
+  renderTeamsList(filtered);
+}
+
+async function openTeam(el) {
+  const id = el.dataset.id;
+  const name = el.dataset.name;
   currentTeamId = id;
   document.getElementById('dashView').style.display = 'none';
   document.getElementById('teamView').style.display = 'block';
   document.getElementById('teamName').textContent = name;
   document.getElementById('userList').innerHTML = `<p style="color:var(--text-muted);">${I18n.t('team_loading')}</p>`;
   document.getElementById('teamError').style.display = 'none';
+  document.getElementById('userSearch').value = '';
 
   try {
     const [usersRes, teamRes] = await Promise.all([
@@ -247,9 +254,8 @@ async function openTeam(id, name) {
 
     isEditable = teamData.editable === true;
     originalMembers = new Set((teamData.team?.users || []).map(u => u.id));
-    const managedUsers = teamData.managedUsers; // 'all' or [id,...]
+    const managedUsers = teamData.managedUsers;
 
-    // Update sidebar: show/hide apply button
     document.getElementById('applyBtn').style.display = isEditable ? 'block' : 'none';
     document.getElementById('viewOnlyBadge').style.display = isEditable ? 'none' : 'flex';
 
@@ -261,7 +267,6 @@ async function openTeam(id, name) {
       const isMember = originalMembers.has(u.id);
       const status = u.availability_status === 'do_not_disturb' ? 'busy' : (u.availability_status || 'offline');
       const pillClass = status === 'available' ? 'pill-available' : status === 'busy' ? 'pill-busy' : 'pill-offline';
-
       const canToggle = isEditable && (managedUsers === 'all' || (Array.isArray(managedUsers) && managedUsers.map(String).includes(String(u.id))));
 
       if (!canToggle) {
@@ -274,7 +279,6 @@ async function openTeam(id, name) {
             <span class="pill ${pillClass}">${I18n.t('status_' + status)}</span>
           </div>`;
       }
-
       return `
         <div class="user-item" data-search="${u.name.toLowerCase()}">
           <label>
@@ -309,7 +313,6 @@ async function applyChanges() {
 
   const checkboxes = document.querySelectorAll('#userList input[type=checkbox]');
   const errors = [];
-
   for (const cb of checkboxes) {
     const uid = parseInt(cb.dataset.id);
     try {
@@ -325,13 +328,10 @@ async function applyChanges() {
 
   btn.disabled = false;
   btn.textContent = I18n.t('team_apply');
-
-  if (!errors.length) {
-    closeDashboard();
-  } else {
-    const errEl = document.getElementById('teamError');
-    errEl.textContent = I18n.t('team_error');
-    errEl.style.display = 'block';
+  if (!errors.length) closeDashboard();
+  else {
+    document.getElementById('teamError').textContent = I18n.t('team_error');
+    document.getElementById('teamError').style.display = 'block';
   }
 }
 
@@ -342,9 +342,8 @@ function closeDashboard() {
   loadData();
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 </script>
 </body>
 </html>
